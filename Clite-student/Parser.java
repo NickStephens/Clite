@@ -261,6 +261,8 @@ public class Parser {
 	} else if (token.type().equals(TokenType.FloatLiteral)) {
 		float f_val = Float.parseFloat(match(token.type()));
 		val = new FloatValue(f_val);
+	} else if (token.isType()) {
+		
 	} else {
 		char c_val = match(token.type()).charAt(0);
 		val = new CharValue(c_val); 
