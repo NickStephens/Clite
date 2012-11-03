@@ -141,10 +141,10 @@ class Block extends Statement {
 
 class Assignment extends Statement {
     // Assignment = Variable target; Expression source
-    Variable target;
+    VariableRef target;
     Expression source;
 
-    Assignment (Variable t, Expression e) {
+    Assignment (VariableRef t, Expression e) {
         target = t;
         source = e;
     }
@@ -182,7 +182,12 @@ abstract class Expression {
 
 }
 
-class Variable extends Expression {
+abstract class VariableRef extends Expression {
+   // VariableRef = Variable | ArrayRef
+
+}
+
+class Variable extends VariableRef {
     // Variable = String id
     private String id;
 
@@ -197,6 +202,27 @@ class Variable extends Expression {
     
     public int hashCode ( ) { return id.hashCode( ); }
 }
+
+class ArrayRef extends VariableRef {
+    // ArrayRef = String id; Expression index
+	
+    private String id;
+    private Expression index;
+
+    ArrayRef (String s, Expression e) {
+	id = s; index = e;
+    }
+
+    public String toString( ) { return id + "[" + index + "]"; }
+
+    public boolean equals (Object obj) {
+	ArrayRef a = (ArrayRef) obj;
+	String aid = a.id;
+	Expression aindex = a.index;
+	return id.equals(aid) && index.equals(aindex); 
+    }
+}
+
 abstract class Value extends Expression {
     // Value = IntValue | BoolValue |
     //         CharValue | FloatValue

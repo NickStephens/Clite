@@ -133,11 +133,21 @@ public class Parser {
   
     private Assignment assignment () {
         // Assignment --> Identifier = Expression ;
-	Variable v = new Variable(match(TokenType.Identifier)); // This should never error, because it is called only when Identifier is known to hold.	
+	String id = match(TokenType.Identifier);
+	VariableRef v;
+	if (token.type().equals(TokenType.LeftBracket)) {
+		match(token.type());
+		Expression e = expression();
+		match(TokenType.RightBracket);
+		v = new ArrayRef(id, e);
+	} else {
+		v = new Variable(match(TokenType.Identifier)); // This should never error, because it is called only when Identifier is known to hold.	
+	}
+
 	match(TokenType.Assign);
-	Expression e = expression(); 
+	Expression e2 = expression(); 
 	
-	return new Assignment(v, e);  // student exercise
+	return new Assignment(v, e2);  // student exercise
     }
   
     private Conditional ifStatement () {
@@ -242,11 +252,19 @@ public class Parser {
     }
   
     private Expression primary () {
-        // Primary --> Identifier | Literal | ( Expression )
+        // Primary --> Identifier [ Expression ] | Literal | ( Expression )
         //             | Type ( Expression )
         Expression e = null;
         if (token.type().equals(TokenType.Identifier)) {
-            e = new Variable(match(TokenType.Identifier));
+	    String id = match(token.type());
+	    if (token.type().equals(TokenType.LeftBracket)) {
+		match(token.type());
+		Expression e2 = expression();
+		match(TokenType.RightBracket);
+		e = new ArrayRef(id, e2); 
+	    } else {
+            	e = new Variable(id);
+	    }
         } else if (isLiteral()) {
             e = literal();
         } else if (token.type().equals(TokenType.LeftParen)) {
