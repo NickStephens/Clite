@@ -74,18 +74,40 @@ class Declarations extends ArrayList<Declaration> {
 
 }
 
-class Declaration {
-// Declaration = Variable v; Type t
+abstract class Declaration {
+// Declaration = VariableDecl | ArrayDecl
+
+}
+
+class VariableDecl extends Declaration {
+// VariableDecl = Variable V; Type t
+
     Variable v;
     Type t;
 
-    Declaration (Variable var, Type type) {
+    VariableDecl (Variable var, Type type) {
         v = var; t = type;
     } // declaration */
 
     public String toString( ) {
 	return "<" + v + ", " + t + ">";
     }
+}
+
+class ArrayDecl extends Declaration {
+// ArrayDecl = Variable v; Type t; Integer size
+
+	Variable v;
+	Type t;
+	IntValue size;
+	
+	ArrayDecl (Variable var, Type type, IntValue alloc) {
+	   v = var; t = type; size = alloc;
+	}	
+	
+	public String toString( ) {
+	   return "<" + v + ", " + t + ", size: " + size + ">";
+	}
 }
 
 class Type {

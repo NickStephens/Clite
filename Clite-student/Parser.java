@@ -54,9 +54,9 @@ public class Parser {
     private Declarations declarations () {
         // Declarations --> { Declaration }
 	Declarations dec = new Declarations();
-	do {
+	while (isType()) {
 	 	declaration(dec);
-	} while (isType());
+	} 
 	return dec;  // student exercise
     }
   
@@ -66,7 +66,20 @@ public class Parser {
 	 do {
 		token = lexer.next();
 		Variable identifier = new Variable(match(TokenType.Identifier));
-		ds.add(new Declaration(identifier, t));
+		if (token.type().equals(TokenType.LeftBracket)) {
+			// Messy array declaration stuff
+			match(token.type());
+			IntValue size = new IntValue();
+			if (token.type().equals(TokenType.IntLiteral)) {
+				size = (IntValue) literal();
+			} else {
+				error("IntLiteral");
+			}
+			match(TokenType.RightBracket);
+			ds.add(new ArrayDecl(identifier, t, size));
+		} else { 
+			ds.add(new VariableDecl(identifier, t));
+		}
 	 } while (token.type().equals(TokenType.Comma));
 	 match(TokenType.Semicolon);
         // student exercise
@@ -261,8 +274,6 @@ public class Parser {
 	} else if (token.type().equals(TokenType.FloatLiteral)) {
 		float f_val = Float.parseFloat(match(token.type()));
 		val = new FloatValue(f_val);
-	} else if (token.isType()) {
-		
 	} else {
 		char c_val = match(token.type()).charAt(0);
 		val = new CharValue(c_val); 
