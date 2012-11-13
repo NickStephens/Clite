@@ -11,8 +11,9 @@ public class StaticTypeCheck {
 
     public static TypeMap typing (Declarations d) {
         TypeMap map = new TypeMap();
-        for (Declaration di : d) 
+        for (Declaration di : d) {
             map.put (di.v, di.t);
+	}
         return map;
     }
 
@@ -92,19 +93,33 @@ public class StaticTypeCheck {
                 throw new IllegalArgumentException("should never reach here");
             return;
         }
-        // student exercise
+        // student exercise Unary
+	
+	if (e instanceof Unary) {
+	    Unary u = (Unary) e;
+	    Type typ = typeOf(u.term, tm); 
+	    V (u.term, tm);
+	    if (u.op.NotOp( ))
+		check( typ == Type.BOOL, u.op + ": non-bool operand");
+	    else if (u.op.NegateOp( ))
+		check( typ == Type.INT || typ == Type.FLOAT, "type error for " + u.op);
+	    else
+		throw new IllegalArgumentException("should never reach here");
+	    return;
+	} 
         throw new IllegalArgumentException("should never reach here");
     }
 
     public static void V (Statement s, TypeMap tm) {
         if ( s == null )
             throw new IllegalArgumentException( "AST error: null statement");
-        if (s instanceof Skip) return;
-        if (s instanceof Assignment) {
+        else if (s instanceof Skip) return;
+        else if (s instanceof Assignment) {
             Assignment a = (Assignment)s;
             check( tm.containsKey(a.target)
                    , " undefined target in assignment: " + a.target);
             V(a.source, tm);
+	    System.out.println(a.source);
             Type ttype = (Type)tm.get(a.target);
             Type srctype = typeOf(a.source, tm);
             if (ttype != srctype) {
@@ -120,18 +135,41 @@ public class StaticTypeCheck {
             }
             return;
         } 
-        // student exercise
-        throw new IllegalArgumentException("should never reach here");
+	// student exercise
+	if (s instanceof Conditional) {
+	    Conditional c = (Conditional) s;
+	    V(c.test, tm);
+	    V(c.thenbranch, tm);
+	    V(c.elsebranch, tm);
+	    Type ttype = typeOf(c.test, tm);
+	    check( ttype == Type.BOOL, "test expression not of type bool: " + c.test);
+	    return;
+	}
+	if (s instanceof Loop) {
+	    Loop l = (Loop) s;
+	    V(l.test, tm);
+	    V(l.body, tm);
+	    Type ttype = typeOf(l.test, tm);
+	    check(ttype == Type.BOOL, "test expression not of type bool: " + l.test);	
+	    return;
+	}
+	if (s instanceof Block) {
+	    Block b = (Block) s;
+	    for (int i=0; i<b.members.size(); i++)
+		V(b.members.get(i), tm);
+	    return;
+	}
+	throw new IllegalArgumentException("should never reach here");
     }
 
     public static void main(String args[]) {
         Parser parser  = new Parser(new Lexer(args[0]));
         Program prog = parser.program();
-        // prog.display();           // student exercise
+        prog.display();           // student exercise
         System.out.println("\nBegin type checking...");
         System.out.println("Type map:");
         TypeMap map = typing(prog.decpart);
-        // map.display();   // student exercise
+        map.display();   // student exercise
         V(prog);
     } //main
 

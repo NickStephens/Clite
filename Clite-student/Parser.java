@@ -25,13 +25,13 @@ public class Parser {
   
     private void error(TokenType tok) {
         System.err.println("Syntax error: expecting: " + tok 
-                           + "; saw: " + token);
+                           + "; saw: " + token + " at " + lexer.get_lineno() + ":" + lexer.get_col());
         System.exit(1);
     }
   
     private void error(String tok) {
         System.err.println("Syntax error: expecting: " + tok 
-                           + "; saw: " + token);
+                           + "; saw: " + token + " at " + lexer.get_lineno() + ":" + lexer.get_col());
         System.exit(1);
     }
   
@@ -134,16 +134,13 @@ public class Parser {
     private Assignment assignment () {
         // Assignment --> Identifier = Expression ;
 	String id = match(TokenType.Identifier);
-	VariableRef v;
+	VariableRef v = new Variable(id);
 	if (token.type().equals(TokenType.LeftBracket)) {
 		match(token.type());
 		Expression e = expression();
 		match(TokenType.RightBracket);
 		v = new ArrayRef(id, e);
-	} else {
-		v = new Variable(match(TokenType.Identifier)); // This should never error, because it is called only when Identifier is known to hold.	
 	}
-
 	match(TokenType.Assign);
 	Expression e2 = expression(); 
 	
@@ -349,7 +346,7 @@ public class Parser {
     public static void main(String args[]) {
         Parser parser  = new Parser(new Lexer(args[0])); //Picks the file name and feeds it to the lexer.
         Program prog = parser.program();
-        System.out.print(prog.display());           // display abstract syntax tree
+        prog.display();           // display abstract syntax tree
     } //main
 
 } // Parser

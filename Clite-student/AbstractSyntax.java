@@ -15,14 +15,14 @@ class Program {
         body = b;
     }
     
-    String display() {
+    void display() {
 	String prefix = TAB + "Declarations:\n";
 	String declars = TAB + TAB + "{";
 		for (int i=0; i<decpart.size();i++) {
 			declars += decpart.get(i) + ", ";
 		}
 	declars = declars.substring(0,declars.length()-2) + "}\n";
-	return prefix + declars + inner_display( TAB, TAB, body);
+	System.out.print(prefix + declars + inner_display( TAB, TAB, body));
     } 
 
     String inner_display(String spc, String spcing, Object node) {
@@ -54,6 +54,13 @@ class Program {
 			blk_string += inner_display(spc, spc + spcing, blk_node.members.get(i));
 		}
 		return prefix + blk_string;
+	} if (node instanceof Conditional) {
+		Conditional con_node = (Conditional) node;
+		String prefix = spcing + "Conditional:\n";
+		String test = inner_display(spc, spc + spcing, con_node.test);
+		String then_branch = inner_display(spc, spc + spcing, con_node.thenbranch);
+		String else_branch = inner_display(spc, spc + spcing, con_node.elsebranch);
+		return prefix + test + then_branch + else_branch;
 	} if (node instanceof Loop) {
 		Loop l_node = (Loop) node;
 		String prefix = spcing + "Loop:\n";
@@ -76,17 +83,19 @@ class Declarations extends ArrayList<Declaration> {
 
 abstract class Declaration {
 // Declaration = VariableDecl | ArrayDecl
+	Variable v;
+	Type t;
 
 }
 
 class VariableDecl extends Declaration {
 // VariableDecl = Variable V; Type t
 
-    Variable v;
-    Type t;
+    //Variable v;
+    //Type t;
 
     VariableDecl (Variable var, Type type) {
-        v = var; t = type;
+        super.v = var; super.t = type;
     } // declaration */
 
     public String toString( ) {
@@ -94,15 +103,16 @@ class VariableDecl extends Declaration {
     }
 }
 
+
 class ArrayDecl extends Declaration {
 // ArrayDecl = Variable v; Type t; Integer size
 
-	Variable v;
-	Type t;
+	//Variable v;
+	//Type t;
 	IntValue size;
 	
 	ArrayDecl (Variable var, Type type, IntValue alloc) {
-	   v = var; t = type; size = alloc;
+	   super.v = var; super.t = type; size = alloc;
 	}	
 	
 	public String toString( ) {

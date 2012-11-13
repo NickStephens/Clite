@@ -36,7 +36,7 @@ public class TypeTransformer {
         if (s instanceof Skip) return s;
         if (s instanceof Assignment) {
             Assignment a = (Assignment)s;
-            Variable target = a.target;
+            VariableRef target = a.target;
             Expression src = T (a.source, tm);
             Type ttype = (Type)tm.get(a.target);
             Type srctype = StaticTypeCheck.typeOf(a.source, tm);
@@ -83,15 +83,15 @@ public class TypeTransformer {
     public static void main(String args[]) {
         Parser parser  = new Parser(new Lexer(args[0]));
         Program prog = parser.program();
-        // prog.display();           // student exercise
+        prog.display();           // student exercise
         System.out.println("\nBegin type checking...");
         System.out.println("Type map:");
         TypeMap map = StaticTypeCheck.typing(prog.decpart);
-        // map.display();    // student exercise
+        map.display();    // student exercise
         StaticTypeCheck.V(prog);
         Program out = T(prog, map);
         System.out.println("Output AST");
-        // out.display();    // student exercise
+        out.display();    // student exercise
     } //main
 
     } // class TypeTransformer

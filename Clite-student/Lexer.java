@@ -172,6 +172,14 @@ public class Lexer {
         return r;
     }
 
+    public int get_lineno() {
+	return lineno;
+    }
+
+    public int get_col() {
+	return col;
+    }
+
     public void error (String msg) {
         System.err.print(line);
         System.err.println("Error: column " + col + " " + msg);
