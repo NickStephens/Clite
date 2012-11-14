@@ -29,7 +29,21 @@ public class TypeTransformer {
             throw new IllegalArgumentException("should never reach here");
         }
         // student exercise
-        throw new IllegalArgumentException("should never reach here");
+	if (e instanceof Unary) {
+	    Unary u = (Unary)e;
+	    Type typ = StaticTypeCheck.typeOf(u.term, tm);
+	    Expression t = T (u.term, tm);
+	    if (typ == Type.INT)
+		return new Unary(u.op.intMap(u.op.val), t);
+	    else if (typ == Type.FLOAT)
+		return new Unary(u.op.floatMap(u.op.val), t);
+	    else if (typ == Type.CHAR)
+		return new Unary(u.op.charMap(u.op.val), t);
+	    else if (typ == Type.BOOL)
+		return new Unary(u.op.boolMap(u.op.val), t);
+            throw new IllegalArgumentException("should never reach here");
+	}
+	throw new IllegalArgumentException("should never reach here");
     }
 
     public static Statement T (Statement s, TypeMap tm) {

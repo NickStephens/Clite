@@ -117,6 +117,8 @@ public class StaticTypeCheck {
 		check( typ == Type.BOOL, u.op + ": non-bool operand");
 	    else if (u.op.NegateOp( ))
 		check( typ == Type.INT || typ == Type.FLOAT, "type error for " + u.op);
+	    else if (u.op.intOp( ) || u.op.floatOp( ) || u.op.charOp( ))
+		check( typ != Type.BOOL, u.op + ": bool operand");
 	    else
 		throw new IllegalArgumentException("should never reach here");
 	    return;
