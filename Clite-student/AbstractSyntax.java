@@ -83,16 +83,13 @@ class Declarations extends ArrayList<Declaration> {
 
 abstract class Declaration {
 // Declaration = VariableDecl | ArrayDecl
-	Variable v;
+	VariableRef v;
 	Type t;
 
 }
 
 class VariableDecl extends Declaration {
 // VariableDecl = Variable V; Type t
-
-    //Variable v;
-    //Type t;
 
     VariableDecl (Variable var, Type type) {
         super.v = var; super.t = type;
@@ -107,8 +104,6 @@ class VariableDecl extends Declaration {
 class ArrayDecl extends Declaration {
 // ArrayDecl = Variable v; Type t; Integer size
 
-	//Variable v;
-	//Type t;
 	IntValue size;
 	
 	ArrayDecl (Variable var, Type type, IntValue alloc) {
@@ -150,7 +145,7 @@ class Block extends Statement {
 }
 
 class Assignment extends Statement {
-    // Assignment = Variable target; Expression source
+    // Assignment = VariableRef target; Expression source
     VariableRef target;
     Expression source;
 
@@ -188,51 +183,58 @@ class Loop extends Statement {
 }
 
 abstract class Expression {
-    // Expression = Variable | Value | Binary | Unary
+    // Expression = VariableRef | Value | Binary | Unary
 
 }
 
 abstract class VariableRef extends Expression {
    // VariableRef = Variable | ArrayRef
+	String id;
 
+	public boolean equals (Object obj) {
+	    String v = ((VariableRef) obj).id;
+	    return id.equals(v);
+	}
 }
 
 class Variable extends VariableRef {
     // Variable = String id
-    private String id;
 
-    Variable (String s) { id = s; }
+    Variable (String s) { super.id = s; }
 
     public String toString( ) { return id; }
     
+	
     public boolean equals (Object obj) {
         String s = ((Variable) obj).id;
         return id.equals(s); // case-sensitive identifiers
     }
+	
     
     public int hashCode ( ) { return id.hashCode( ); }
 }
 
-class ArrayRef extends VariableRef {
+class ArrayRef extends Variable {
     // ArrayRef = String id; Expression index
 	
-    private String id;
-    private Expression index;
+    Expression index;
 
     ArrayRef (String s, Expression e) {
-	id = s; index = e;
+	super(s); index = e;
     }
 
     public String toString( ) { return id + "[" + index + "]"; }
 
+    /*
     public boolean equals (Object obj) {
 	ArrayRef a = (ArrayRef) obj;
 	String aid = a.id;
 	Expression aindex = a.index;
 	return id.equals(aid) && index.equals(aindex); 
     }
+    */
 }
-
+	
 abstract class Value extends Expression {
     // Value = IntValue | BoolValue |
     //         CharValue | FloatValue

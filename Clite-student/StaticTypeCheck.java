@@ -44,7 +44,12 @@ public class StaticTypeCheck {
             Variable v = (Variable)e;
             check (tm.containsKey(v), "undefined variable: " + v);
             return (Type) tm.get(v);
-        }
+	}
+	if (e instanceof ArrayRef) {
+	    ArrayRef a = (ArrayRef)e;
+	    check (tm.containsKey(a), "undefined variable: " + a);
+	    return (Type) tm.get(a);
+	}
         if (e instanceof Binary) {
             Binary b = (Binary)e;
             if (b.op.ArithmeticOp( ))
@@ -68,13 +73,22 @@ public class StaticTypeCheck {
     public static void V (Expression e, TypeMap tm) {
         if (e instanceof Value) 
             return;
+	if (e instanceof ArrayRef) {
+	    ArrayRef a = (ArrayRef)e;
+	    check( tm.containsKey(a)
+		   , "undeclared variable: " + a);
+	    Type typ = typeOf(a.index, tm);
+	    check ( typ == Type.INT
+		    , " non-int expression as index for " + a);
+	    return;
+	}
         if (e instanceof Variable) { 
             Variable v = (Variable)e;
             check( tm.containsKey(v)
                    , "undeclared variable: " + v);
             return;
         }
-        if (e instanceof Binary) {
+	if (e instanceof Binary) {
             Binary b = (Binary) e;
             Type typ1 = typeOf(b.term1, tm);
             Type typ2 = typeOf(b.term2, tm);
@@ -118,8 +132,8 @@ public class StaticTypeCheck {
             Assignment a = (Assignment)s;
             check( tm.containsKey(a.target)
                    , " undefined target in assignment: " + a.target);
+	    V(a.target, tm);
             V(a.source, tm);
-	    System.out.println(a.source);
             Type ttype = (Type)tm.get(a.target);
             Type srctype = typeOf(a.source, tm);
             if (ttype != srctype) {
