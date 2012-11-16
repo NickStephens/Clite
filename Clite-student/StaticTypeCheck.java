@@ -94,11 +94,16 @@ public class StaticTypeCheck {
             Type typ2 = typeOf(b.term2, tm);
             V (b.term1, tm);
             V (b.term2, tm);
-            if (b.op.ArithmeticOp( ))  
-                check( typ1 == typ2 &&
-                       (typ1 == Type.INT || typ1 == Type.FLOAT)
-                       , "type error for " + b.op);
-            else if (b.op.RelationalOp( )) 
+            if (b.op.ArithmeticOp( )) {
+		if (typ1 == Type.FLOAT && typ2 == Type.INT) 
+			check( true, "should never reach here");
+		else if (typ1 == Type.INT && typ2 == Type.FLOAT)		
+			check( true, "should never reach here");
+		else
+                	check( typ1 == typ2 &&
+                       		(typ1 == Type.INT || typ1 == Type.FLOAT)
+                       		, "type error for " + b.op);
+            } else if (b.op.RelationalOp( )) 
                 check( typ1 == typ2 , "type error for " + b.op);
             else if (b.op.BooleanOp( )) 
                 check( typ1 == Type.BOOL && typ2 == Type.BOOL,
