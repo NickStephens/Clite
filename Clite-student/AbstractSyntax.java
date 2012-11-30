@@ -83,7 +83,7 @@ class Declarations extends ArrayList<Declaration> {
 
 abstract class Declaration {
 // Declaration = VariableDecl | ArrayDecl
-	VariableRef v;
+	Variable v;
 	Type t;
 
 }
@@ -207,6 +207,7 @@ class Variable extends VariableRef {
 	
     public boolean equals (Object obj) {
         String s = ((Variable) obj).id;
+	System.out.println("I've been called");
         return id.equals(s); // case-sensitive identifiers
     }
 	
