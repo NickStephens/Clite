@@ -6,6 +6,9 @@ import java.util.*;
 // V and the auxiliary functions typing and typeOf.  These
 // functions use the classes in the Abstract Syntax of Clite.
 
+// Consider turning arraydecls into variable decls for the purposes of typechecking.
+// This may have consequences when we get past the TypeTransformer. Hopefully
+// information will not be lost.
 
 public class StaticTypeCheck {
 
@@ -47,8 +50,9 @@ public class StaticTypeCheck {
 	}
 	if (e instanceof ArrayRef) {
 	    ArrayRef a = (ArrayRef)e;
-	    check (tm.containsKey(a), "undefined variable: " + a);
-	    return (Type) tm.get(a);
+	    Variable key = new Variable(a.id);
+	    check (tm.containsKey(key), "undefined arrayref: " + a);
+	    return (Type) tm.get(key);
 	}
         if (e instanceof Binary) {
             Binary b = (Binary)e;
@@ -75,7 +79,7 @@ public class StaticTypeCheck {
             return;
 	if (e instanceof ArrayRef) {
 	    ArrayRef a = (ArrayRef)e;
-	    check( tm.containsKey(a)
+	    check( tm.containsKey(new Variable(a.id))
 		   , "undeclared variable: " + a);
 	    Type typ = typeOf(a.index, tm);
 	    check ( typ == Type.INT
@@ -137,22 +141,28 @@ public class StaticTypeCheck {
         else if (s instanceof Skip) return;
         else if (s instanceof Assignment) {
             Assignment a = (Assignment)s;
-            check( tm.containsKey(a.target)
-                   , " undefined target in assignment: " + a.target);
-	    V(a.target, tm);
+	    Variable target;
+	    if (a.target instanceof ArrayRef) {
+	    	target = new Variable(a.target.id);
+	    }
+	    else { 
+	        target = (Variable) a.target;
+	    }
+	    check( tm.containsKey(target)
+		   , " undefined arrayref target in assignment: " + a.target);
             V(a.source, tm);
-            Type ttype = (Type)tm.get(a.target);
+            Type ttype = (Type)tm.get(target);
             Type srctype = typeOf(a.source, tm);
             if (ttype != srctype) {
                 if (ttype == Type.FLOAT)
                     check( srctype == Type.INT
-                           , "mixed mode assignment to " + a.target);
+                           , "mixed mode assignment to " + target);
                 else if (ttype == Type.INT)
                     check( srctype == Type.CHAR
-                           , "mixed mode assignment to " + a.target);
+                           , "mixed mode assignment to " + target);
                 else
                     check( false
-                           , "mixed mode assignment to " + a.target);
+                           , "mixed mode assignment to " + target);
             }
             return;
         } 

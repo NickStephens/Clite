@@ -184,7 +184,14 @@ class Loop extends Statement {
 
 abstract class Expression {
     // Expression = VariableRef | Value | Binary | Unary
-
+ 
+    // This is really hacky.
+    // Since there is no way to ensure that two indexes of an ArrayRef equal the same
+    /*
+    public boolean equals (Object obj) {
+    	return true;
+    }
+    */
 }
 
 abstract class VariableRef extends Expression {
@@ -193,6 +200,7 @@ abstract class VariableRef extends Expression {
 
 	public boolean equals (Object obj) {
 	    String v = ((VariableRef) obj).id;
+	    System.out.println("VarRef equals called");
 	    return id.equals(v);
 	}
 }
@@ -204,36 +212,36 @@ class Variable extends VariableRef {
 
     public String toString( ) { return id; }
     
-	
     public boolean equals (Object obj) {
         String s = ((Variable) obj).id;
-	System.out.println("I've been called");
         return id.equals(s); // case-sensitive identifiers
     }
-	
     
     public int hashCode ( ) { return id.hashCode( ); }
 }
 
-class ArrayRef extends Variable {
+class ArrayRef extends VariableRef {
     // ArrayRef = String id; Expression index
 	
     Expression index;
 
     ArrayRef (String s, Expression e) {
-	super(s); index = e;
+	super.id = s; index = e;
     }
 
     public String toString( ) { return id + "[" + index + "]"; }
 
-    /*
     public boolean equals (Object obj) {
-	ArrayRef a = (ArrayRef) obj;
-	String aid = a.id;
-	Expression aindex = a.index;
-	return id.equals(aid) && index.equals(aindex); 
+    	try {
+	    ArrayRef a = (ArrayRef) obj;
+	    String aid = a.id;
+	    Expression aindex = a.index;
+	    return id.equals(aid) && index.equals(aindex); 
+        }
+	catch (ClassCastException e) {
+		return false; 
+	}
     }
-    */
 }
 	
 abstract class Value extends Expression {
@@ -290,6 +298,11 @@ class IntValue extends Value {
     public String toString( ) {
         if (undef)  return "undef";
         return "" + value;
+    }
+
+    public boolean equals(Object obj) {
+    	IntValue iv = (IntValue) obj;
+	return iv.value == this.value;
     }
 
 }

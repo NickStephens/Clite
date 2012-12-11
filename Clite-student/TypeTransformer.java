@@ -10,7 +10,7 @@ public class TypeTransformer {
     public static Expression T (Expression e, TypeMap tm) {
         if (e instanceof Value) 
             return e;
-        if (e instanceof Variable) 
+        if (e instanceof VariableRef) 
             return e;
         if (e instanceof Binary) {
             Binary b = (Binary)e; 
@@ -54,9 +54,15 @@ public class TypeTransformer {
         if (s instanceof Skip) return s;
         if (s instanceof Assignment) {
             Assignment a = (Assignment)s;
-            VariableRef target = a.target;
+	    Variable target;
+	    if (a.target instanceof ArrayRef) {
+ 	           target = new Variable(a.target.id);
+	    }
+	    else {
+	    	   target = (Variable) a.target;
+	    }
             Expression src = T (a.source, tm);
-            Type ttype = (Type)tm.get(a.target);
+            Type ttype = (Type)tm.get(target);
             Type srctype = StaticTypeCheck.typeOf(a.source, tm);
             if (ttype == Type.FLOAT) {
                 if (srctype == Type.INT) {
@@ -72,7 +78,7 @@ public class TypeTransformer {
             }
             StaticTypeCheck.check( ttype == srctype,
                       "bug in assignment to " + target);
-            return new Assignment(target, src);
+            return new Assignment(a.target, src);
         } 
         if (s instanceof Conditional) {
             Conditional c = (Conditional)s;

@@ -9,13 +9,19 @@ public class Semantics {
     }
   
     State initialState (Declarations d) {
+    	// This should be modified for arrayRefs
         State state = new State();
         Value intUndef = new IntValue();
         for (Declaration decl : d)
-            state.put(decl.v, Value.mkValue(decl.t));
+	    if (decl instanceof ArrayDecl) {
+	    	ArrayDecl adecl = (ArrayDecl) decl;
+	    	for (int i=0; i<(adecl.size.intValue());i++)
+			state.put(new ArrayRef(adecl.v.toString(), new IntValue(i)), Value.mkValue(adecl.t));
+		}
+	    else 
+            	state.put(decl.v, Value.mkValue(decl.t));
         return state;
     }
-  
   
     State M (Statement s, State state) {
         if (s instanceof Skip) return M((Skip)s, state);
@@ -31,7 +37,13 @@ public class Semantics {
     }
   
     State M (Assignment a, State state) {
-        return state.onion(a.target, M (a.source, state));
+	System.out.println("ContainsKey: " + state.containsKey(a.target));
+	ArrayRef b = (ArrayRef) a.target;
+	ArrayRef r = new ArrayRef(b.id, M(b.index, state));
+	System.out.println("Eq: " + r.equals(a.target));
+        State st = state.onion(a.target, M (a.source, state));
+	st.display();
+	return st;
     }
   
     State M (Block b, State state) {
@@ -65,7 +77,34 @@ public class Semantics {
         if (op.val.equals(Operator.INT_DIV)) 
             return new IntValue(v1.intValue( ) / v2.intValue( ));
         // student exercise
+	if (op.val.equals(Operator.INT_LT))
+	    return new BoolValue(v1.intValue() < v2.intValue());
+	if (op.val.equals(Operator.INT_GT))
+	    return new BoolValue(v1.intValue() > v2.intValue());
+	if (op.val.equals(Operator.INT_EQ))
+	    return new BoolValue(v1.intValue() == v2.intValue());
+	if (op.val.equals(Operator.INT_NE))
+	    return new BoolValue(v1.intValue() != v2.intValue());
+
+	if (op.val.equals(Operator.FLOAT_LT))
+	    return new BoolValue(v1.floatValue() < v2.floatValue());
+	if (op.val.equals(Operator.FLOAT_GT))
+	    return new BoolValue(v1.floatValue() > v2.floatValue());
+	if (op.val.equals(Operator.FLOAT_EQ))
+	    return new BoolValue(v1.floatValue() == v2.floatValue());
+	if (op.val.equals(Operator.FLOAT_NE))
+	    return new BoolValue(v1.floatValue() != v2.floatValue());
+
+	if (op.val.equals(Operator.FLOAT_PLUS)) 
+            return new FloatValue(v1.floatValue( ) + v2.floatValue( ));
+        if (op.val.equals(Operator.FLOAT_MINUS)) 
+            return new FloatValue(v1.floatValue( ) - v2.floatValue( ));
+        if (op.val.equals(Operator.FLOAT_TIMES)) 
+            return new FloatValue(v1.floatValue( ) * v2.floatValue( ));
+        if (op.val.equals(Operator.FLOAT_DIV)) 
+            return new FloatValue(v1.floatValue( ) / v2.floatValue( ));
         throw new IllegalArgumentException("should never reach here");
+	
     } 
     
     Value applyUnary (Operator op, Value v) {
@@ -91,8 +130,16 @@ public class Semantics {
     Value M (Expression e, State state) {
         if (e instanceof Value) 
             return (Value)e;
-        if (e instanceof Variable) 
+	if (e instanceof ArrayRef) {
+	    ArrayRef a = (ArrayRef) e;
+	    ArrayRef key = new ArrayRef(a.id, M(a.index, state));
+	    System.out.println(key + " " + a.equals(key));
+	    return (Value)(state.get(key));
+	}
+        if (e instanceof VariableRef) { 
+	    System.out.println(state.get(e));
             return (Value)(state.get(e));
+	    }
         if (e instanceof Binary) {
             Binary b = (Binary)e;
             return applyBinary (b.op, 
@@ -108,18 +155,20 @@ public class Semantics {
     public static void main(String args[]) {
         Parser parser  = new Parser(new Lexer(args[0]));
         Program prog = parser.program();
-        // prog.display();    // student exercise
+        prog.display();    // student exercise
         System.out.println("\nBegin type checking...");
         System.out.println("Type map:");
         TypeMap map = StaticTypeCheck.typing(prog.decpart);
-        // map.display();    // student exercise
+        map.display();    // student exercise
         StaticTypeCheck.V(prog);
         Program out = TypeTransformer.T(prog, map);
         System.out.println("Output AST");
-        // out.display();    // student exercise
+        out.display();    // student exercise
         Semantics semantics = new Semantics( );
+	State instate = semantics.initialState(out.decpart);
+	instate.display( );	
         State state = semantics.M(out);
         System.out.println("Final State");
-        // state.display( );  // student exercise
+        state.display( );  // student exercise
     }
 }
