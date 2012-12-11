@@ -37,18 +37,20 @@ public class Semantics {
     }
   
     State M (Assignment a, State state) {
-	System.out.println("ContainsKey: " + state.containsKey(a.target));
-	ArrayRef b = (ArrayRef) a.target;
-	ArrayRef r = new ArrayRef(b.id, M(b.index, state));
-	System.out.println("Eq: " + r.equals(a.target));
-        State st = state.onion(a.target, M (a.source, state));
-	st.display();
+    	if (a.target instanceof ArrayRef) {
+		ArrayRef b = (ArrayRef) a.target;
+		ArrayRef r = new ArrayRef(b.id, M(b.index, state));
+        	State st = state.onion(r, M (a.source, state));
+		return st;
+	}
+	State st = state.onion(a.target, M(a.source, state));
 	return st;
     }
   
     State M (Block b, State state) {
-        for (Statement s : b.members)
+        for (Statement s : b.members) {
             state = M (s, state);
+	}
         return state;
     }
   
@@ -133,11 +135,9 @@ public class Semantics {
 	if (e instanceof ArrayRef) {
 	    ArrayRef a = (ArrayRef) e;
 	    ArrayRef key = new ArrayRef(a.id, M(a.index, state));
-	    System.out.println(key + " " + a.equals(key));
 	    return (Value)(state.get(key));
 	}
         if (e instanceof VariableRef) { 
-	    System.out.println(state.get(e));
             return (Value)(state.get(e));
 	    }
         if (e instanceof Binary) {
@@ -165,8 +165,6 @@ public class Semantics {
         System.out.println("Output AST");
         out.display();    // student exercise
         Semantics semantics = new Semantics( );
-	State instate = semantics.initialState(out.decpart);
-	instate.display( );	
         State state = semantics.M(out);
         System.out.println("Final State");
         state.display( );  // student exercise

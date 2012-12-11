@@ -213,8 +213,13 @@ class Variable extends VariableRef {
     public String toString( ) { return id; }
     
     public boolean equals (Object obj) {
-        String s = ((Variable) obj).id;
-        return id.equals(s); // case-sensitive identifiers
+    	try {
+        	String s = ((Variable) obj).id;
+        	return id.equals(s); // case-sensitive identifiers
+	}
+	catch (ClassCastException e) {
+		return false;
+	}
     }
     
     public int hashCode ( ) { return id.hashCode( ); }
