@@ -3,26 +3,26 @@
 import java.util.*;
 
 class Program {
-    // Program = Declarations decpart ; Block body
+    // Program = Declarations globals ; Block functions
 
     private static final String TAB = "  ";	
 
-    Declarations decpart;
-    Block body;
+    Declarations globals;
+    Functions functions;
 
-    Program (Declarations d, Block b) {
-        decpart = d;
-        body = b;
+    Program (Declarations g, Functions f) {
+        globals = g;
+        functions = f;
     }
     
     void display() {
 	String prefix = TAB + "Declarations:\n";
 	String declars = TAB + TAB + "{";
-		for (int i=0; i<decpart.size();i++) {
-			declars += decpart.get(i) + ", ";
+		for (int i=0; i<globals.size();i++) {
+			declars += globals.get(i) + ", ";
 		}
 	declars = declars.substring(0,declars.length()-2) + "}\n";
-	System.out.print(prefix + declars + inner_display( TAB, TAB, body));
+	System.out.print(prefix + declars + inner_display( TAB, TAB, functions));
     } 
 
     String inner_display(String spc, String spcing, Object node) {
@@ -75,6 +75,25 @@ class Program {
     }
 }
 
+class Functions extends ArrayList<Function> {
+	// Functions = Function*
+	// (a list of functions f1, f2, ..., fn)
+
+}
+
+class Function {
+	// Type t; String id; Declarations params, locals; Block body;
+
+	Type t;
+	String id;
+	Declarations params, locals;
+	Block body;
+
+	Function (Type t, String id, Declarations locals, Declarations params, Block body) {
+		this.t = t; this.id = id; this.locals = locals; this.params = params; this.body = body;
+	}
+}
+
 class Declarations extends ArrayList<Declaration> {
     // Declarations = Declaration*
     // (a list of declarations d1, d2, ..., dn)
@@ -116,11 +135,12 @@ class ArrayDecl extends Declaration {
 }
 
 class Type {
-    // Type = int | bool | char | float 
+    // Type = int | bool | char | float | void
     final static Type INT = new Type("int");
     final static Type BOOL = new Type("bool");
     final static Type CHAR = new Type("char");
     final static Type FLOAT = new Type("float");
+    final static Type VOID = new Type("void");
     // final static Type UNDEFINED = new Type("undef");
     
     private String id;
@@ -131,7 +151,7 @@ class Type {
 }
 
 abstract class Statement {
-    // Statement = Skip | Block | Assignment | Conditional | Loop
+    // Statement = Skip | Block | Assignment | Conditional | Loop | Call | Return
 
 }
 
@@ -182,8 +202,30 @@ class Loop extends Statement {
     
 }
 
+class Call extends Statement {
+	String name;
+	Expressions args;
+
+	Call (String name, Expressions args) {
+		this.name = name; this.args = args;
+	}
+}
+
+class Return extends Statement {
+	VariableRef target;
+	Expression result;
+
+	Return (VariableRef target, Expression result) {
+		this.target = target; this.result = result;
+	}
+}
+	
+class Expressions extends ArrayList<Expression> {
+	// Expressions = Expression*
+}
+
 abstract class Expression {
-    // Expression = VariableRef | Value | Binary | Unary
+    // Expression = VariableRef | Value | Binary | Unary | Call
 }
 
 abstract class VariableRef extends Expression {
