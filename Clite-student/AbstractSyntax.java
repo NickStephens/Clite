@@ -240,7 +240,10 @@ class ArrayRef extends VariableRef {
 	}
     }
 
-    public int hashCode( ) { return id.hashCode + index.intValue(); }
+    public int hashCode( ) {
+    	IntValue ival = (IntValue) index;
+    	return id.hashCode() + ival.intValue(); 
+    }
     // I think the reason the ArrayRefs are not being matched. Is because I have not implemented the function hashCode, for ArrayRef
 }
 	
