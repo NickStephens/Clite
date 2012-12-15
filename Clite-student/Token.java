@@ -16,6 +16,8 @@ public class Token {
     public static final Token mainTok = new Token(TokenType.Main, "main");
     public static final Token trueTok = new Token(TokenType.True, "true");
     public static final Token whileTok = new Token(TokenType.While, "while");
+    public static final Token voidTok = new Token(TokenType.Void, "void");
+    public static final Token returnTok = new Token(TokenType.Return, "return");
     public static final Token leftBraceTok = new Token(TokenType.LeftBrace, "{");
     public static final Token rightBraceTok = new Token(TokenType.RightBrace, "}");
     public static final Token leftBracketTok = new Token(TokenType.LeftBracket, "[");
