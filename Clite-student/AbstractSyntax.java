@@ -184,14 +184,6 @@ class Loop extends Statement {
 
 abstract class Expression {
     // Expression = VariableRef | Value | Binary | Unary
- 
-    // This is really hacky.
-    // Since there is no way to ensure that two indexes of an ArrayRef equal the same
-    /*
-    public boolean equals (Object obj) {
-    	return true;
-    }
-    */
 }
 
 abstract class VariableRef extends Expression {
@@ -247,6 +239,9 @@ class ArrayRef extends VariableRef {
 		return false; 
 	}
     }
+
+    public int hashCode( ) { return id.hashCode + index.intValue(); }
+    // I think the reason the ArrayRefs are not being matched. Is because I have not implemented the function hashCode, for ArrayRef
 }
 	
 abstract class Value extends Expression {
