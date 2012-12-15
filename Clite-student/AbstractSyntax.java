@@ -202,11 +202,11 @@ class Loop extends Statement {
     
 }
 
-class Call extends Statement {
+class CallStatement extends Statement {
 	String name;
 	Expressions args;
 
-	Call (String name, Expressions args) {
+	CallStatement (String name, Expressions args) {
 		this.name = name; this.args = args;
 	}
 }
@@ -434,6 +434,17 @@ class Unary extends Expression {
         op = o; term = e;
     } // unary
 
+}
+
+class CallExpression extends Expression {
+	// Call = String name; Expressions args
+
+	String name;
+	Expressions args;
+
+	CallExpression (String name, Expressions args) {
+		this.name = name; this.args = args;
+	}
 }
 
 class Operator {
