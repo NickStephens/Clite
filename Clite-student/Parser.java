@@ -34,10 +34,88 @@ public class Parser {
                            + "; saw: " + token + " at " + lexer.get_lineno() + ":" + lexer.get_col());
         System.exit(1);
     }
-  
+
     public Program program() {
-        // Program --> void main ( ) '{' Declarations Statements '}'
-        TokenType[ ] header = {TokenType.Int, TokenType.Main,
+    	// Program --> { Type Identifier FunctionOrGlobal } MainFunction
+	Functions funcs = new Functions();
+	Declarations globals = new Declarations();
+	while (isType()) {
+		Type t = type();
+		token = lexer.next();
+		if (token.type().equals(TokenType.Main))
+			break;
+		String id = match(TokenType.Identifier);
+		functionOrGlobal(t, id, globals, funcs);	
+	}
+	// Need to catch an error if main is not of type int
+	Function last = mainFunction();
+	funcs.add(last);
+
+	return new Program(globals, funcs);
+
+    }
+
+    private void functionOrGlobal(Type t, String id, Declarations decs, Functions funcs) {
+    	// FunctionOrGlobal --> ( Parameters ) { Declarations Statements } | Global
+	if (token.type().equals(TokenType.LeftParen)) {
+		//match(token.type());
+		Declarations params = parameters();
+		match(TokenType.RightParen);
+		match(TokenType.LeftBrace);
+		Declarations locals = declarations();
+		Block body = statements();
+		match(TokenType.RightBrace);
+		funcs.add(new Function(t, id, params, locals, body));
+	}
+	else
+		global(t, id, decs);
+    }
+
+    private Declarations parameters() {
+    	// Parameters --> [ Parameter { , Parameter } ]
+    	Declarations params = new Declarations();
+	do {
+		token = lexer.next();
+		parameter(params);
+	} while (token.type().equals(TokenType.Comma));
+	return params;
+    }
+    	
+    private void parameter(Declarations dec) {
+    	// Parameter --> Type Identifier [ [] ] 
+    	Type t = type(); 
+	token = lexer.next();
+	String id = match(TokenType.Identifier);
+	if (token.type().equals(TokenType.LeftBrace)) {
+		match(token.type());
+		match(TokenType.RightBrace);
+		dec.add(new ArrayDecl(new Variable(id), t, (IntValue) Value.mkValue(Type.INT)));
+	} else 
+		dec.add(new VariableDecl(new Variable(id), t));
+    }
+
+	
+    private void global(Type t, String id, Declarations decs) {
+    	// Global --> { , Identifier } ;
+    	if (token.type().equals(TokenType.LeftBrace)) {
+		match(TokenType.LeftBrace);
+		IntValue size = (IntValue) literal();
+		match(TokenType.RightBrace);
+		decs.add(new ArrayDecl(new Variable(id), t, size));
+	} else 
+		decs.add(new VariableDecl(new Variable(id), t));
+	
+	if (token.type().equals(TokenType.Comma)) {
+		while (isType( )) {
+			declaration(decs);
+		}
+	} else 
+		match(TokenType.Semicolon);
+    }
+  
+    private Function mainFunction() {
+        // MainFunction --> int main ( ) '{' Declarations Statements '}'
+        TokenType[ ] header = { TokenType.Main,
                           TokenType.LeftParen, TokenType.RightParen};
         for (int i=0; i<header.length; i++)   // bypass "int main ( )"
             match(header[i]);
@@ -48,7 +126,8 @@ public class Parser {
 		Block body = statements();
 
         match(TokenType.RightBrace);
-        return new Program(decpart, body);  // student exercise
+	Declarations params = new Declarations();
+        return new Function(Type.INT, "main", params, decpart, body);  // student exercise
     }
   
     private Declarations declarations () {
@@ -96,6 +175,8 @@ public class Parser {
 		t = Type.CHAR;
 	} else if (token.type().equals(TokenType.Float)) {
 		t = Type.FLOAT;
+	} else if (token.type().equals(TokenType.Void)) {
+		t = Type.VOID;
 	} else error("int | bool | float | char");
         // student exercise
         return t;          
@@ -328,7 +409,8 @@ public class Parser {
         return token.type().equals(TokenType.Int)
             || token.type().equals(TokenType.Bool) 
             || token.type().equals(TokenType.Float)
-            || token.type().equals(TokenType.Char);
+            || token.type().equals(TokenType.Char)
+	    || token.type().equals(TokenType.Void);
     }
     
     private boolean isLiteral( ) {
