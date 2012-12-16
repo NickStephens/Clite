@@ -183,19 +183,26 @@ public class Parser {
     }
   
     private Statement statement() {
-        // Statement --> ; | Block | Assignment | IfStatement | WhileStatement
+        // Statement --> ; | Block | Assignment | IfStatement | WhileStatement | CallStatement | ReturnStatement
         Statement s = new Skip();
 	if (token.type().equals(TokenType.LeftBrace)) {
 		match(TokenType.LeftBrace);
 		s = statements();
 		match(TokenType.RightBrace);
-	} else if (token.type().equals(TokenType.Identifier)) {
-		s = assignment();
+	} else if (token.type().equals(TokenType.Identifier)) { // Could be either an Assignment or Call
+		String id = match(token.type());
+		if (token.type().equals(TokenType.LeftParen)) {
+			s = callStatement(id);
+		} else
+			s = assignment(id);
 		match(TokenType.Semicolon);
 	} else if (token.type().equals(TokenType.If)) {
 		s = ifStatement();
 	} else if (token.type().equals(TokenType.While)) {
 		s = whileStatement();
+	} else if (token.type().equals(TokenType.Return)) {
+		s = returnStatement();
+		match(TokenType.Semicolon);
 	} else {
 		match(TokenType.Semicolon);
 	}
@@ -211,10 +218,19 @@ public class Parser {
         // student exercise
         return b;
     }
+
+    private CallStatement callStatement(String id) {
+	Expressions args = new Expressions();
+	do {
+		token = lexer.next();
+		args.add(expression());
+	} while (token.type().equals(TokenType.Comma));
+	match(TokenType.RightParen);
+  	return new CallStatement(id, args); 
+    }
   
-    private Assignment assignment () {
+    private Assignment assignment (String id) {
         // Assignment --> Identifier = Expression ;
-	String id = match(TokenType.Identifier);
 	VariableRef v = new Variable(id);
 	if (token.type().equals(TokenType.LeftBracket)) {
 		match(token.type());
@@ -251,6 +267,12 @@ public class Parser {
 	match(TokenType.RightParen);
 	Statement st = statement();
         return new Loop(test, st);  // student exercise
+    }
+
+    private Return returnStatement() {
+    	match(TokenType.Return);
+	Expression result = expression();
+	return new Return(new Variable("FunctionID"), result);
     }
 
     private Expression expression () {
@@ -331,7 +353,7 @@ public class Parser {
   
     private Expression primary () {
         // Primary --> Identifier [ Expression ] | Literal | ( Expression )
-        //             | Type ( Expression )
+        //             | Call
         Expression e = null;
         if (token.type().equals(TokenType.Identifier)) {
 	    String id = match(token.type());
@@ -340,8 +362,10 @@ public class Parser {
 		Expression e2 = expression();
 		match(TokenType.RightBracket);
 		e = new ArrayRef(id, e2); 
-	    } else {
-            	e = new Variable(id);
+	    } else if (token.type().equals(TokenType.LeftParen)) {
+		e = callExpression(id); // Because call has to be both a statement and an expression we distinguish its superclass with two methods.
+	    } else {		
+		e = new Variable(id);
 	    }
         } else if (isLiteral()) {
             e = literal();
@@ -357,6 +381,16 @@ public class Parser {
             e = new Unary(op, term);
         } else error("Identifier | Literal | ( | Type");
         return e;
+    }
+
+    private CallExpression callExpression(String id) {
+	Expressions args = new Expressions();
+	do {
+		token = lexer.next();
+		args.add(expression());
+	} while (token.type().equals(TokenType.Comma));
+	match(TokenType.RightParen);
+	return new CallExpression(id, args);
     }
 
     private Value literal( ) {
