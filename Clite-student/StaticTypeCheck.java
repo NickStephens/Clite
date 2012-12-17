@@ -12,6 +12,26 @@ import java.util.*;
 
 public class StaticTypeCheck {
 
+    // public static void V(Function f)
+    // public static TypeMap typing(Declarations p, Declarations l)
+
+    public static TypeMap typing (Declarations G, Functions F, Function f) {
+    	TypeMap map = new TypeMap();
+	for (Declaration di : G) {
+		map.put (di.v, di.t);
+	}
+	for (Function fi : F) {
+		map.put (new Variable(fi.id), typing(fi.params));
+	}
+	for (Declaration pi : f.params) {
+		map.put (pi.v, pi.t);
+	}
+	for (Declaration li : f.locals) {
+		map.put (li.v, li.t);
+	}
+	return map;
+    }
+
     public static TypeMap typing (Declarations d) {
         TypeMap map = new TypeMap();
         for (Declaration di : d) {
@@ -37,7 +57,7 @@ public class StaticTypeCheck {
     } 
 
     public static void V (Program p) {
-        V (p.decpart);
+        V (typing(p.globals), typing(p.functions));
         V (p.body, typing (p.decpart));
     } 
 
@@ -199,8 +219,6 @@ public class StaticTypeCheck {
         prog.display();           // student exercise
         System.out.println("\nBegin type checking...");
         System.out.println("Type map:");
-        TypeMap map = typing(prog.decpart);
-        map.display();   // student exercise
         V(prog);
     } //main
 
