@@ -16,7 +16,7 @@ class Program {
     }
     
     void display() {
-	String prefix = TAB + "Declarations:\n";
+	String prefix = TAB + "Globals:\n";
 	String declars = TAB + TAB + "{";
 		for (int i=0; i<globals.size();i++) {
 			declars += globals.get(i) + ", ";
@@ -67,6 +67,40 @@ class Program {
 		String test = inner_display(spc, spc + spcing, l_node.test);
 		String body = inner_display(spc, spc + spcing, l_node.body); 	
 		return prefix + test + body;
+	} if (node instanceof Functions) {
+		Functions f_node = (Functions) node;
+		String prefix = spcing + "Functions:\n";
+		String f_string = "";
+		if (f_node.size() < 1)
+			return spcing + spc + "None\n";
+		for (int i=0; i<f_node.size(); i++) {
+			f_string += inner_display(spc, spc + spcing, f_node.get(i));
+		}
+		return prefix + f_string;
+	} if (node instanceof Declarations) {
+		Declarations d_node = (Declarations) node;
+		String declars = spcing + spc + "{";
+		if (d_node.size() < 1) 
+			return spcing + spc + "None\n";
+		for (int i=0; i<d_node.size();i++) {
+			declars += d_node.get(i) + ", ";
+		}
+		declars = declars.substring(0,declars.length()-2) + "}\n";
+		return declars;
+	} if (node instanceof Function) { 
+		Function f_node = (Function) node;
+		//String prefix = spcing + "Function:\n";
+		String title_and_type = spcing + "Function Name: " + f_node.id + " Type: " + f_node.t + "\n";
+		String params = spc + spcing + "Parameters:\n" + inner_display(spc, spc + spcing, f_node.params);
+		String locals = spc + spcing + "Locals:\n" + inner_display(spc, spc + spcing, f_node.locals);
+		String body = inner_display(spc, spc + spcing, f_node.body);
+		return title_and_type + params + locals + body;
+	} if (node instanceof Return) {
+		Return r_node = (Return) node;
+		String prefix = spcing + "Return:\n";
+		String target = inner_display(spc, spc + spcing, r_node.target);
+		String result = inner_display(spc, spc + spcing, r_node.result);
+		return prefix + target + result;
 	} else {
 		String prefix = spcing + (node.getClass() + "").substring(6) + ": ";
 		String value = node + "\n"; 
@@ -89,7 +123,7 @@ class Function {
 	Declarations params, locals;
 	Block body;
 
-	Function (Type t, String id, Declarations locals, Declarations params, Block body) {
+	Function (Type t, String id, Declarations params, Declarations locals, Block body) {
 		this.t = t; this.id = id; this.locals = locals; this.params = params; this.body = body;
 	}
 }
