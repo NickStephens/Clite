@@ -101,6 +101,25 @@ class Program {
 		String target = inner_display(spc, spc + spcing, r_node.target);
 		String result = inner_display(spc, spc + spcing, r_node.result);
 		return prefix + target + result;
+	} if (node instanceof CallStatement) {
+		CallStatement c_node = (CallStatement) node;
+		String prefix = spcing + "Call:\n";
+		String name = spc + spcing + "Name: " + c_node.name + "\n"; 
+		String args = inner_display(spc, spc + spcing, c_node.args);	
+		return prefix + name + args;
+	} if (node instanceof CallExpression) { 
+		CallExpression c_node = (CallExpression) node;
+		String prefix = spcing + "Call:\n";
+		String name = spc + spcing + "Name: " + c_node.name + "\n"; 
+		String args = inner_display(spc, spc + spcing, c_node.args);	
+		return prefix + name + args;
+	} if (node instanceof Expressions) {
+		Expressions e_node = (Expressions) node;
+		String prefix = spcing + "Expressions:\n";
+		String e_string = "";
+		for (int i=0;i<e_node.size();i++)
+			e_string += inner_display(spc, spc + spcing, e_node.get(i));
+		return prefix + e_string;
 	} else {
 		String prefix = spcing + (node.getClass() + "").substring(6) + ": ";
 		String value = node + "\n"; 

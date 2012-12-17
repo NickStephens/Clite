@@ -86,9 +86,9 @@ public class Parser {
     	Type t = type(); 
 	token = lexer.next();
 	String id = match(TokenType.Identifier);
-	if (token.type().equals(TokenType.LeftBrace)) {
+	if (token.type().equals(TokenType.LeftBracket)) {
 		match(token.type());
-		match(TokenType.RightBrace);
+		match(TokenType.RightBracket);
 		dec.add(new ArrayDecl(new Variable(id), t, (IntValue) Value.mkValue(Type.INT)));
 	} else 
 		dec.add(new VariableDecl(new Variable(id), t));
