@@ -17,11 +17,16 @@ class Program {
     
     void display() {
 	String prefix = TAB + "Globals:\n";
-	String declars = TAB + TAB + "{";
-		for (int i=0; i<globals.size();i++) {
-			declars += globals.get(i) + ", ";
-		}
-	declars = declars.substring(0,declars.length()-2) + "}\n";
+	String declars;
+	if (globals.size() < 1) 
+		declars = TAB + TAB + "None\n";
+	else {
+		declars = TAB + TAB + "{";
+			for (int i=0; i<globals.size();i++) {
+				declars += globals.get(i) + ", ";
+			}
+		declars = declars.substring(0,declars.length()-2) + "}\n";
+	}
 	System.out.print(prefix + declars + inner_display( TAB, TAB, functions));
     } 
 
@@ -497,6 +502,17 @@ class CallExpression extends Expression {
 
 	CallExpression (String name, Expressions args) {
 		this.name = name; this.args = args;
+	}
+
+	public String toString() {
+		String prefix = name;
+		String acc = "";
+		if (args.size() < 1) 
+			return prefix + "()";
+		for(int i=0; i<args.size();i++) {
+			acc += args.get(i) +", ";	
+		}
+		return prefix + "(" + acc.substring(0, acc.length()-2) + ")";
 	}
 }
 

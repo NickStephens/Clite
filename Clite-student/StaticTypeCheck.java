@@ -222,17 +222,22 @@ public class StaticTypeCheck {
 		//Looking for typemap associated with call's name
 		Object o = tm.get(new Variable(c.name));
 		check ( o != null, "Call " + c + " references non-existent function");
+
 		FunctionMap fm = (FunctionMap) o; 
+		check( ! fm.getType().equals(Type.VOID), "call expression " + c + " to void function");
 		TypeMap called_params = (TypeMap) fm.getParams();	
+
 		Iterator it = called_params.entrySet().iterator();
 		for (int i=0; i<c.args.size(); i++) {
 			check (it.hasNext(), "too many arguments provided to function " + c.name);
-			Map.Entry<VariableRef, Object> current_param = (Map.Entry<VariableRef, Object>) it.next();	
+			Map.Entry<VariableRef, Object> current_param= (Map.Entry<VariableRef, Object>) it.next();
+			Type current_type = (Type) current_param.getValue();
 			Expression current_arg = c.args.get(i);
-			check( typeOf(current_arg, tm).equals(current_param.getValue()),
-				"type of " + c.args.get(i) + " doesn't match " + current_param); 
+			check( typeOf(current_arg, tm).equals(current_type),
+				"type of " + c.args.get(i) + " doesn't match the corresponding parameter in call " + c); 
 		}
 		check( ! it.hasNext(), "not enough arguments provided to function " + c.name);
+		return;
 	}
         throw new IllegalArgumentException("should never reach here");
     }
@@ -251,7 +256,7 @@ public class StaticTypeCheck {
 	        target = (Variable) a.target;
 	    }
 	    check( tm.containsKey(target)
-		   , " undefined arrayref target in assignment: " + a.target);
+		   , " undefined variable target in assignment: " + a.target);
             V(a.source, tm);
             Type ttype = (Type)tm.get(target);
             Type srctype = typeOf(a.source, tm);
@@ -292,6 +297,27 @@ public class StaticTypeCheck {
 		V(b.members.get(i), tm);
 	    return;
 	}
+	if (s instanceof CallStatement) {
+		CallStatement c = (CallStatement) s;
+		//Looking for typemap associated with call's name
+		Object o = tm.get(new Variable(c.name));
+		check ( o != null, "Call " + c + " references non-existent function");
+		
+		FunctionMap fm = (FunctionMap) o; 
+		check( fm.getType().equals(Type.VOID), "call statement " + c + "to non-void function");
+		TypeMap called_params = (TypeMap) fm.getParams();	
+
+		Iterator it = called_params.entrySet().iterator();
+		for (int i=0; i<c.args.size(); i++) {
+			check (it.hasNext(), "too many arguments provided to function " + c.name);
+			Expression current_arg = c.args.get(i);
+			check( typeOf(current_arg, tm).equals(it.next()),
+				"type of " + c.args.get(i) + " doesn't match the corresponding parameter in call " + c); 
+		}
+		check( ! it.hasNext(), "not enough arguments provided to function " + c.name);
+	}
+	if (s instanceof Return) 
+		return;
 	throw new IllegalArgumentException("should never reach here");
     }
 
