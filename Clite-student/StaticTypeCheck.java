@@ -52,14 +52,75 @@ public class StaticTypeCheck {
                 Declaration di = d.get(i);
                 Declaration dj = d.get(j);
                 check( ! (di.v.equals(dj.v)),
-                       "duplicate declaration: " + dj.v);
+                       "duplicate global: " + dj.v);
+		check( ! (di.t.equals(Type.VOID)),
+		       "global with type void: " + di.v);
+		check( ! (dj.t.equals(Type.VOID)),
+		       "global with type void: " + dj.v);
             }
     } 
 
-    public static void V (Program p) {
-        V (typing(p.globals), typing(p.functions));
-        V (p.body, typing (p.decpart));
+    public static void V (Declarations G, Functions F) {
+    	for (int i=0; i<G.size(); i++)
+	    for (int j=0; j<F.size(); j++) {
+	    	Declaration Gi = G.get(i);
+		Function Fj = F.get(i);
+		check( !(Gi.v.equals(new Variable(Fj.id))),
+			"duplicate name: " + Fj.id);
+		}
+    }
+
+    public static void V (Functions F) {
+        for (int i=0; i<F.size() - 1; i++)
+            for (int j=i+1; j<F.size(); j++) {
+                Function Fi = F.get(i);
+                Function Fj = F.get(j);
+                check( ! (Fi.id.equals(Fj.id)),
+                       "duplicate function name: " + Fi);
+            }
     } 
+    public static void V (Program p) {
+	// Since the TypeMap is an extension of HashMap, strictly obeying the formalized type rules is erroneous. 
+	// Concrete syntax guarentees that the final function declared must be main, so that type checking has been omitted.
+	V (p.globals);
+	V (p.functions);
+        V (p.globals, p.functions);
+	for(Function fi : p.functions) 
+		V(fi, typing(p.globals, p.functions, fi));
+    } 
+
+    public static void V (Function f, TypeMap tm) {
+	Declarations params_and_locals = f.params;
+	for(int i=0; i<f.locals.size(); i++) {
+		params_and_locals.add(f.locals.get(i));
+	}
+	V(params_and_locals);
+	if (! f.t.equals(Type.VOID) && !f.id.equals("main")) {
+		// Find the return statements
+		boolean contains_ret = false; //sorry Sherri
+		for (Statement s : f.body.members) {
+			if (s.getClass().equals(Return.class)) {
+				Return r = (Return) s;
+				check( typeOf(r.result, tm).equals(f.t),
+					"retun statement in function " + f.id + " with incorrect type " + typeOf(r.result, tm));
+				contains_ret = true;	
+			}
+		}
+		if (!contains_ret)
+			check( false, "non-void function " + f.id + " does not contain return statement");	
+	} else if (f.t.equals(Type.VOID)) {
+		for (Statement s : f.body.members) {
+			check( ! s.getClass().equals(Return.class), 
+				"return statement in void function " + f.id);
+		}
+	} else {
+		for (Statement s : f.body.members) {
+			check (! s.getClass().equals(Return.class),
+				"return statement in main");
+		}
+	}
+	V(f.body, tm);
+    }
 
     public static Type typeOf (Expression e, TypeMap tm) {
         if (e instanceof Value) return ((Value)e).type;
@@ -132,7 +193,7 @@ public class StaticTypeCheck {
             else if (b.op.BooleanOp( )) 
                 check( typ1 == Type.BOOL && typ2 == Type.BOOL,
                        b.op + ": non-bool operand");
-            else
+	    else
                 throw new IllegalArgumentException("should never reach here");
             return;
         }
@@ -152,6 +213,18 @@ public class StaticTypeCheck {
 		throw new IllegalArgumentException("should never reach here");
 	    return;
 	} 
+	if (e instance CallExpression) {
+		CallExpression c = (CallExpression) e;
+		//Looking for typemap associated with call's name
+		Object o = tm.get(new Variable(c.name));
+		check ( o != null, "Call " + c + " references non-existent function");
+		TypeMap called_params = (TypeMap) o;
+		Iterator it = called_params.entrySet().iterator();
+		for (int i=0; i<c.args.size(); i++) {
+			
+			check( typeOf(c.args.get(i).equals(it.next)),
+				"type of " + c.args.get(i) + " doesn't match) 
+
         throw new IllegalArgumentException("should never reach here");
     }
 
