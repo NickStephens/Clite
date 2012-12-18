@@ -21,7 +21,7 @@ public class StaticTypeCheck {
 		map.put (di.v, di.t);
 	}
 	for (Function fi : F) {
-		map.put (new Variable(fi.id), typing(fi.params));
+		map.put (new Variable(fi.id), new FunctionMap (fi.t, typing(fi.params)));
 	}
 	for (Declaration pi : f.params) {
 		map.put (pi.v, pi.t);
@@ -151,7 +151,11 @@ public class StaticTypeCheck {
             else if (u.op.intOp( ))    return (Type.INT);
             else if (u.op.floatOp( )) return (Type.FLOAT);
             else if (u.op.charOp( ))  return (Type.CHAR);
-        }
+        } if (e instanceof CallExpression) {
+	    CallExpression c = (CallExpression) e;
+	    FunctionMap fm = (FunctionMap) tm.get(new Variable(c.name));
+	    return fm.getType();
+	}
         throw new IllegalArgumentException("should never reach here");
     } 
 
@@ -213,18 +217,23 @@ public class StaticTypeCheck {
 		throw new IllegalArgumentException("should never reach here");
 	    return;
 	} 
-	if (e instance CallExpression) {
+	if (e instanceof CallExpression) {
 		CallExpression c = (CallExpression) e;
 		//Looking for typemap associated with call's name
 		Object o = tm.get(new Variable(c.name));
 		check ( o != null, "Call " + c + " references non-existent function");
-		TypeMap called_params = (TypeMap) o;
+		FunctionMap fm = (FunctionMap) o; 
+		TypeMap called_params = (TypeMap) fm.getParams();	
 		Iterator it = called_params.entrySet().iterator();
 		for (int i=0; i<c.args.size(); i++) {
-			
-			check( typeOf(c.args.get(i).equals(it.next)),
-				"type of " + c.args.get(i) + " doesn't match) 
-
+			check (it.hasNext(), "too many arguments provided to function " + c.name);
+			Map.Entry<VariableRef, Object> current_param = (Map.Entry<VariableRef, Object>) it.next();	
+			Expression current_arg = c.args.get(i);
+			check( typeOf(current_arg, tm).equals(current_param.getValue()),
+				"type of " + c.args.get(i) + " doesn't match " + current_param); 
+		}
+		check( ! it.hasNext(), "not enough arguments provided to function " + c.name);
+	}
         throw new IllegalArgumentException("should never reach here");
     }
 
