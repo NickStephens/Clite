@@ -32,6 +32,18 @@ public class StaticTypeCheck {
 	return map;
     }
 
+
+    public static TypeMap typing (Declarations G, Functions F ) {
+    	TypeMap map = new TypeMap();
+	for (Declaration di : G) {
+		map.put (di.v, di.t);
+	}
+	for (Function fi : F) {
+		map.put (new Variable(fi.id), new FunctionMap (fi.t, typing(fi.params)));
+	}
+	return map;
+    }
+
     public static TypeMap typing (Declarations d) {
         TypeMap map = new TypeMap();
         for (Declaration di : d) {
@@ -327,6 +339,8 @@ public class StaticTypeCheck {
         prog.display();           // student exercise
         System.out.println("\nBegin type checking...");
         System.out.println("Type map:");
+	TypeMap globals = typing(prog.globals, prog.functions);
+	globals.display();
         V(prog);
     } //main
 

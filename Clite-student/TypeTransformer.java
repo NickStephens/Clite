@@ -3,9 +3,19 @@ import java.util.*;
 public class TypeTransformer {
 
     public static Program T (Program p, TypeMap tm) {
-        Block body = (Block)T(p.body, tm);
-        return new Program(p.decpart, body);
+	Functions t_funcs = new Functions();
+    	for (int i=0; i<p.functions.size(); i++) {
+		Function func = p.functions.get(i);
+        	Function t_func = T(func, StaticTypeCheck.typing(p.globals, p.functions, func));
+		t_funcs.add(t_func);
+	}
+        return new Program(p.globals, t_funcs);
     } 
+
+    public static Function T (Function f, TypeMap tm) {
+    	Block t_body = (Block) T(f.body, tm);
+    	return new Function(f.t, f.id, f.params, f.locals, t_body); 
+    }
 
     public static Expression T (Expression e, TypeMap tm) {
         if (e instanceof Value) 
@@ -47,6 +57,8 @@ public class TypeTransformer {
 		return new Unary(u.op.boolMap(u.op.val), t);
             throw new IllegalArgumentException("should never reach here");
 	}
+	if (e instanceof CallExpression) 
+	    return e; 
 	throw new IllegalArgumentException("should never reach here");
     }
 
@@ -100,6 +112,12 @@ public class TypeTransformer {
                 out.members.add(T(stmt, tm));
             return out;
         }
+	if (s instanceof Return) {
+		Return r = (Return) s;	
+		return new Return(r.target, T(r.result, tm));
+	}
+	if (s instanceof CallStatement)
+		return s;
         throw new IllegalArgumentException("should never reach here");
     }
     
@@ -110,7 +128,7 @@ public class TypeTransformer {
         prog.display();           // student exercise
         System.out.println("\nBegin type checking...");
         System.out.println("Type map:");
-        TypeMap map = StaticTypeCheck.typing(prog.decpart);
+        TypeMap map = StaticTypeCheck.typing(prog.globals, prog.functions);
         map.display();    // student exercise
         StaticTypeCheck.V(prog);
         Program out = T(prog, map);

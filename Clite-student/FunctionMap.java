@@ -13,4 +13,8 @@ public class FunctionMap {
 	public TypeMap getParams() {
 		return params;
 	}
+
+	public String toString() {
+		return " ," + t + " ," + params + ">";
+	}
 }
