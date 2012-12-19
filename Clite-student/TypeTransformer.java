@@ -57,8 +57,28 @@ public class TypeTransformer {
 		return new Unary(u.op.boolMap(u.op.val), t);
             throw new IllegalArgumentException("should never reach here");
 	}
-	if (e instanceof CallExpression) 
-	    return e; 
+	if (e instanceof CallExpression) {
+		CallExpression c = (CallExpression) e;
+		//Looking for typemap associated with call's name
+		Object o = tm.get(new Variable(c.name));
+		FunctionMap fm = (FunctionMap) o; 
+		TypeMap called_params = (TypeMap) fm.getParams();	
+
+		Iterator it = called_params.entrySet().iterator();
+
+		Expressions t_args = new Expressions();
+		for (int i=0; i<c.args.size(); i++) {
+			Map.Entry<VariableRef, Object> current_param= (Map.Entry<VariableRef, Object>) it.next();
+			Type param_type = (Type) current_param.getValue();
+			Expression current_arg = c.args.get(i);
+			if (param_type == Type.FLOAT && StaticTypeCheck.typeOf(current_arg, tm) == Type.INT) {
+				t_args.add(new Unary(new Operator(Operator.I2F), current_arg));	
+			} else {
+				t_args.add(current_arg);
+			}
+		}
+		return new CallExpression(c.name, t_args);
+	}
 	throw new IllegalArgumentException("should never reach here");
     }
 
@@ -116,8 +136,28 @@ public class TypeTransformer {
 		Return r = (Return) s;	
 		return new Return(r.target, T(r.result, tm));
 	}
-	if (s instanceof CallStatement)
-		return s;
+	if (s instanceof CallStatement) {
+		CallStatement c = (CallStatement) s;
+		//Looking for typemap associated with call's name
+		Object o = tm.get(new Variable(c.name));
+		FunctionMap fm = (FunctionMap) o; 
+		TypeMap called_params = (TypeMap) fm.getParams();	
+
+		Iterator it = called_params.entrySet().iterator();
+
+		Expressions t_args = new Expressions();
+		for (int i=0; i<c.args.size(); i++) {
+			Map.Entry<VariableRef, Object> current_param= (Map.Entry<VariableRef, Object>) it.next();
+			Type param_type = (Type) current_param.getValue();
+			Expression current_arg = c.args.get(i);
+			if (param_type == Type.FLOAT && StaticTypeCheck.typeOf(current_arg, tm) == Type.INT) {
+				t_args.add(new Unary(new Operator(Operator.I2F), current_arg));	
+			} else {
+				t_args.add(current_arg);
+			}
+		}
+		return new CallStatement(c.name, t_args);
+	}
         throw new IllegalArgumentException("should never reach here");
     }
     
