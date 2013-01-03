@@ -91,6 +91,7 @@ public class StaticTypeCheck {
                        "duplicate function name: " + Fi);
             }
     } 
+
     public static void V (Program p) {
 	// Since the TypeMap is an extension of HashMap, strictly obeying the formalized type rules is erroneous. 
 	// Concrete syntax guarentees that the final function declared must be main, so that type checking has been omitted.
@@ -102,9 +103,12 @@ public class StaticTypeCheck {
     } 
 
     public static void V (Function f, TypeMap tm) {
-	Declarations params_and_locals = f.params;
+	Declarations params_and_locals = new Declarations();
 	for(int i=0; i<f.locals.size(); i++) {
 		params_and_locals.add(f.locals.get(i));
+	}
+	for(int i=0; i<f.params.size(); i++) {
+		params_and_locals.add(f.params.get(i));
 	}
 	V(params_and_locals);
 	if (! f.t.equals(Type.VOID) && !f.id.equals("main")) {
@@ -150,7 +154,7 @@ public class StaticTypeCheck {
         if (e instanceof Binary) {
             Binary b = (Binary)e;
             if (b.op.ArithmeticOp( ))
-                if (typeOf(b.term1,tm)== Type.FLOAT)
+                if (typeOf(b.term1,tm)== Type.FLOAT || typeOf(b.term2,tm)== Type.FLOAT)
                     return (Type.FLOAT);
                 else return (Type.INT);
             if (b.op.RelationalOp( ) || b.op.BooleanOp( )) 

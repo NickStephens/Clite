@@ -54,16 +54,27 @@ public class StackFrame { // Activation Record
 	}
 
 	public void display() {
-	String stk_name = "stk_name: " + name + "\n";
-	String static_link = "slink: " + slink.get_name() + "\n";
-	String dyn_link = "dlink: " + dlink.get_name() + "\n";	
-	String tm = "{ ";
-	Iterator it = frame_state.entrySet().iterator();
-	while(it.hasNext()) {
-		tm += it.next() + " ,";
-	}
-	tm = tm.substring(0, tm.length() - 2) + " }";
-	System.out.println(stk_name + static_link + dyn_link + tm);
+		String acc = "";
+		String frame_name = "stk_frame name: " + name + "\n";
+
+		String tm = "Vars: { ";
+		Iterator it = frame_state.entrySet().iterator();
+		while(it.hasNext()) {
+			tm += it.next() + " ,";
+		}
+
+		int sub;
+		if (tm.length() > 8)
+			sub = 2;	
+		else
+			sub = 1;
+		tm = tm.substring(0, tm.length() - sub) + " }\n";
+
+		if (slink != null)
+			acc += "slink: " + slink.get_name() + "\n";
+		if (dlink != null)
+			acc += "dlink: " + dlink.get_name() + "\n";	
+		System.out.println(frame_name + tm + acc);
   	}
 }
 

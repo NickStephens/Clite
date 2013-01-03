@@ -2,7 +2,7 @@ public class State {
 	
 	private Functions text;
 	private Stack stack;
-	// Heap
+	// heap
 	// bbs
 	// data
 
@@ -16,6 +16,16 @@ public class State {
 		stack = new Stack( );
 	}
 
+	public Declarations get_func_vars(String id) {
+		Function f = text.get(id);
+		Declarations acc = new Declarations();
+		for (Declaration di : f.params)
+			acc.add(di);
+		for (Declaration di : f.locals)
+			acc.add(di);
+		return acc;
+	}
+
 	/* returns the instruction of the function specified by id */
 	public Block get_func_intrs(String id) {
 		return text.get(id).body;
@@ -23,7 +33,7 @@ public class State {
 
 	/* pushes a StackFrame onto the stack */
 	public State push(StackFrame stk_frm) {
-		stack.push(stk_frm);
+		stack = stack.push(stk_frm);
 		return this;
 	}
 
@@ -34,6 +44,7 @@ public class State {
 
 	public void display ( ) {
 		System.out.println("Functions: (not yet implemented in display()) \n");
+		System.out.println("Stack: ");
 		stack.display();
 	}
 }
