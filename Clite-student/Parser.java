@@ -63,6 +63,8 @@ public class Parser {
 		match(TokenType.RightParen);
 		match(TokenType.LeftBrace);
 		Declarations locals = declarations();
+		if (t != Type.VOID) // adding a return variable 
+			locals.add(new VariableDecl(new Variable("$ret"), t));
 		Block body = statements();
 		match(TokenType.RightBrace);
 		funcs.add(new Function(t, id, params, locals, body));
@@ -271,7 +273,7 @@ public class Parser {
     private Return returnStatement() {
     	match(TokenType.Return);
 	Expression result = expression();
-	return new Return(new Variable("FunctionID"), result);
+	return new Return(new Variable("$ret"), result);
     }
 
     private Expression expression () {

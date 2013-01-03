@@ -59,7 +59,6 @@ public class StackFrame { // Activation Record
 	   To make Clite interpret the program with dynamic scoping, switch
 	   slink to dlink */
 	public StackFrame set(VariableRef var, Value val) {
-
 		if (frame_state.containsKey(var))
 			onion(var, val);
 		else

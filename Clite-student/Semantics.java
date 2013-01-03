@@ -222,14 +222,10 @@ public class Semantics {
 		// assign the arguments to the values of the parameters on c's stackframe
 		byValue(state.get_params(), args, state);
 
-		System.out.println("[DEBUG - SEM] before interpretation of '" + c.name + "'");
-		state.debug();
 		// interpret called funcs body
 		M (state.get_instrs(), state);
-		System.out.println("[DEBUG - SEM] after interpretation of '" + c.name + "'");
-		state.debug();
 	
-		Value ret = state.get(new Variable("FunctionID"));
+		Value ret = state.get(new Variable("$ret"));
 
 		// pop called func's stackframe
 		state.pop();
