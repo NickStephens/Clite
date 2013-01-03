@@ -110,7 +110,7 @@ public class StackFrame { // Activation Record
 			sub = 1;
 			
 		tm = tm.substring(0, tm.length() - sub) + " }";
-		System.out.println(tm);
+		System.out.print(tm);
 	}
 		
 

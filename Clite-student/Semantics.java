@@ -10,10 +10,9 @@ public class Semantics {
 	// The meaning of a program is the meaning of main with both the globals and main's StackFrames on the state's stack.
 
 	State state = initialState(p);
-	state.push(new StackFrame("main", state);
+	state.push(new StackFrame("main", state));
 	return M (state.get_instrs(), state);
 
-        //return M (new CallStatement("main", new Expressions()), initialState(p)); 
     }
   
     /* returns the initial state of a program
@@ -112,12 +111,8 @@ public class Semantics {
 	// assign the arguments to the values of the parameters on c's stackframe
 	byValue(state.get_params(), args, state);
 
-	System.out.println("[DEBUG - SEM] before '" + c.name + "' is interpreted");
-	state.debug();
 	// interpret called funcs body
 	M (state.get_instrs(), state);
-	System.out.println("[DEBUG - SEM] after '" + c.name + "' is interpreted");
-	state.debug();
 
 	// pop called func's stackframe
 	state.pop();

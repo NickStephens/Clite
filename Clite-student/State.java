@@ -88,10 +88,11 @@ public class State {
 	}
 
 	public void display( ) {
-		System.out.println("Globals:");
+		System.out.print("\tGlobals: ");
 		data.display( );	
-		System.out.println("Main:");
+		System.out.print("\n\tMain: ");
 		stack.display( );
+		System.out.print("\n");
 		// How to display main:
 			// Prevent the stack from popping the first data structure which is entered
 			// Push main onto the stack at the begining of interpretation
