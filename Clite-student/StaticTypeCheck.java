@@ -339,6 +339,7 @@ public class StaticTypeCheck {
 			}
 		}
 		check( ! it.hasNext(), "not enough arguments provided to function " + c.name);
+		return;
 	}
 	if (s instanceof Return) 
 		return;

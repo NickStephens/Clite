@@ -8,7 +8,7 @@ public class Semantics {
 	// The meaning of a program is the meaning of main with both the globals and main's StackFrames on the state's stack.
 	
 	// pushing globals, then main
-	state = initialState(p);
+	return initialState(p);
 
         //return M (p.body, initialState(p.decpart)); 
     }
@@ -20,8 +20,7 @@ public class Semantics {
 	StackFrame globals = new StackFrame("globals", p.globals);
 	
 	Function main_func = p.functions.get("main");
-	StackFrame main = new StackFrame("main", globals, null, main_func.params);
-	main.onion(main_func.locals);
+	StackFrame main = new StackFrame("main", globals, null, main_func.params, main_func.locals);
 
 	state.push(globals);
 	state.push(main);
@@ -42,6 +41,7 @@ public class Semantics {
         return state;
     	*/
     }
+    /*
   
     State M (Statement s, State state) {
         if (s instanceof Skip) return M((Skip)s, state);
@@ -172,13 +172,14 @@ public class Semantics {
         throw new IllegalArgumentException("should never reach here");
     }
 
+    */
     public static void main(String args[]) {
         Parser parser  = new Parser(new Lexer(args[0]));
         Program prog = parser.program();
         prog.display();    // student exercise
         System.out.println("\nBegin type checking...");
         System.out.println("Type map:");
-        TypeMap map = StaticTypeCheck.typing(prog.decpart);
+        TypeMap map = StaticTypeCheck.typing(prog.globals, prog.functions);
         map.display();    // student exercise
         StaticTypeCheck.V(prog);
         Program out = TypeTransformer.T(prog, map);

@@ -9,18 +9,22 @@ public class StackFrame { // Activation Record
 	// Return Address
 	// Saved Frame Pointer
 
-	public StackFrame (String frame_name) {
+	public StackFrame (String frame_name, Declarations globals) {
 		name = frame_name;
 		slink = null;
 		dlink = null;
 		frame_state = new FrameState();
+		for (Declaration di : globals) 
+			frame_state.onion(di.v, Value.mkValue(di.t));
 	}
 
-	public StackFrame (String frame_name, StackFrame static_link, StackFrame dynamic_link, Declarations decls) {
+	public StackFrame (String frame_name, StackFrame static_link, StackFrame dynamic_link, Declarations params, Declarations locals) {
 		name = frame_name;
 		slink = static_link; dlink = dynamic_link;
 		frame_state = new FrameState();
-		for (Declaration di : decls) 
+		for (Declaration di : params) 
+			frame_state.onion(di.v, Value.mkValue(di.t));
+		for (Declaration di : locals) 
 			frame_state.onion(di.v, Value.mkValue(di.t));
 	}	
 
