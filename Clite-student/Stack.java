@@ -16,6 +16,12 @@ public class Stack {
 		stack.add(stk_frm);
 	}
 
+	public StackFrame get_top( ) {
+		if (head < 1)
+			throw new IllegalArgumentException("stack underflow");
+		return stack.get(head - 1);
+	}
+
 	/* pops the current head off the stack
      	   returns the head */
 	public StackFrame pop () {
@@ -37,11 +43,20 @@ public class Stack {
 		return this;
 	}
 
-	public void display() {
+	public boolean isEmpty() {
+		return head == 0;
+	}
+
+	public void display( ) {
+		get_top( ).display( );		
+	}
+
+	/* displays usefule debug information */
+	public void debug() {
 		int marker = head;
 		while (marker > 0) {
 			System.out.println(marker + "-------------");
-			stack.get(marker - 1).display();
+			stack.get(marker - 1).debug();
 			marker -= 1;
 		}
 	}

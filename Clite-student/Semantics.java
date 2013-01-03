@@ -1,3 +1,5 @@
+import java.util.*;
+
 // Following is the semantics class:
 // The meaning M of a Statement is a State
 // The meaning M of a Expression is a Value
@@ -6,20 +8,25 @@ public class Semantics {
 
     State M (Program p) { 
 	// The meaning of a program is the meaning of main with both the globals and main's StackFrames on the state's stack.
-	
-        return M (new CallStatement("main", new Expressions()), initialState(p)); 
+
+	State state = initialState(p);
+	state.push(new StackFrame("main", state);
+	return M (state.get_instrs(), state);
+
+        //return M (new CallStatement("main", new Expressions()), initialState(p)); 
     }
   
     /* returns the initial state of a program
        pushes globals then main onto stack */
     State initialState (Program p) {
-    	State state = new State(p.functions);
 	StackFrame globals = new StackFrame("globals", p.globals);
+
+    	State state = new State(p.functions, globals);
 	
-	Function main_func = p.functions.get("main");
+	//Function main_func = p.functions.get("main");
 	//StackFrame main = new StackFrame("main", globals, null, main_func.params, main_func.locals);
 
-	state.push(globals);
+	//state.push(globals);
 	//state.push(main);	
 
 	return state;
@@ -38,14 +45,21 @@ public class Semantics {
         return state;
     	*/
     }
-    /*
-  
+
+    State byValue (Declarations params, ArrayList<Value> args, State state) {
+	for (int i=0; i<params.size(); i++) 
+		state.set(params.get(i).v, args.get(i));	
+	return state;
+    }
+ 
     State M (Statement s, State state) {
         if (s instanceof Skip) return M((Skip)s, state);
         if (s instanceof Assignment)  return M((Assignment)s, state);
         if (s instanceof Conditional)  return M((Conditional)s, state);
         if (s instanceof Loop)  return M((Loop)s, state);
         if (s instanceof Block)  return M((Block)s, state);
+	if (s instanceof CallStatement) return M((CallStatement)s, state);
+	if (s instanceof Return) return M((Return)s, state);
         throw new IllegalArgumentException("should never reach here");
     }
   
@@ -57,10 +71,10 @@ public class Semantics {
     	if (a.target instanceof ArrayRef) {
 		ArrayRef b = (ArrayRef) a.target;
 		ArrayRef r = new ArrayRef(b.id, M(b.index, state));
-        	State st = state.onion(r, M (a.source, state));
+        	State st = state.set(r, M (a.source, state));
 		return st;
 	}
-	State st = state.onion(a.target, M(a.source, state));
+	State st = state.set(a.target, M(a.source, state));
 	return st;
     }
   
@@ -82,6 +96,37 @@ public class Semantics {
         if (M (l.test, state).boolValue( ))
             return M(l, M (l.body, state));
         else return state;
+    }
+
+    State M (CallStatement c, State state) {
+	//Determine the value of c's args
+	ArrayList<Value> args = new ArrayList<Value>();
+	for (Expression expr : c.args) {
+		Value val = M(expr, state);
+		args.add(val);
+	}
+
+    	// push c's stackframe onto stack
+	state.push(new StackFrame(c.name, state));
+
+	// assign the arguments to the values of the parameters on c's stackframe
+	byValue(state.get_params(), args, state);
+
+	System.out.println("[DEBUG - SEM] before '" + c.name + "' is interpreted");
+	state.debug();
+	// interpret called funcs body
+	M (state.get_instrs(), state);
+	System.out.println("[DEBUG - SEM] after '" + c.name + "' is interpreted");
+	state.debug();
+
+	// pop called func's stackframe
+	state.pop();
+
+	return state;
+    }
+
+    State M (Return r, State state) {
+    	return state.set(r.target, M(r.result, state));
     }
 
     Value applyBinary (Operator op, Value v1, Value v2) {
@@ -155,7 +200,7 @@ public class Semantics {
 	    return (Value)(state.get(key));
 	}
         if (e instanceof VariableRef) { 
-            return (Value)(state.get(e));
+            return (Value)(state.get((VariableRef)e));
 	    }
         if (e instanceof Binary) {
             Binary b = (Binary)e;
@@ -169,7 +214,6 @@ public class Semantics {
         throw new IllegalArgumentException("should never reach here");
     }
 
-    */
     public static void main(String args[]) {
         Parser parser  = new Parser(new Lexer(args[0]));
         Program prog = parser.program();
