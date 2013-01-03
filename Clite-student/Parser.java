@@ -67,8 +67,10 @@ public class Parser {
 		match(TokenType.RightBrace);
 		funcs.add(new Function(t, id, params, locals, body));
 	}
-	else
+	else {
 		global(t, id, decs);
+		match(TokenType.Semicolon);
+	}
     }
 
     private Declarations parameters() {
@@ -96,21 +98,18 @@ public class Parser {
 
 	
     private void global(Type t, String id, Declarations decs) {
-    	// Global --> { , Identifier } ;
-    	if (token.type().equals(TokenType.LeftBrace)) {
-		match(TokenType.LeftBrace);
+    	// Global --> { , Identifier } ; // Considering just calling declarations now.
+	if (token.type().equals(TokenType.LeftBracket)) {
+		match(TokenType.LeftBracket);
 		IntValue size = (IntValue) literal();
-		match(TokenType.RightBrace);
+		match(TokenType.RightBracket);
 		decs.add(new ArrayDecl(new Variable(id), t, size));
 	} else 
 		decs.add(new VariableDecl(new Variable(id), t));
-	
 	if (token.type().equals(TokenType.Comma)) {
-		while (isType( )) {
-			declaration(decs);
-		}
-	} else 
-		match(TokenType.Semicolon);
+		token = lexer.next();
+		global(t, match(TokenType.Identifier), decs);
+	}
     }
   
     private Function mainFunction() {
