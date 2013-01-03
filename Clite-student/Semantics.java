@@ -5,6 +5,9 @@
 public class Semantics {
 
     State M (Program p) { 
+	// The meaning of a program is the meaning of main with both the globals and main's StackFrames on the stack.
+	Function main = p.function.get("main");
+
         return M (p.body, initialState(p.decpart)); 
     }
   
