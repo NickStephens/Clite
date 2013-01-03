@@ -60,6 +60,7 @@ public class State {
 		return this;
 	}
 
+	/* returns the current functions parameters */
 	public Declarations get_params( ) {
 		return current_func.params;
 	}
@@ -93,18 +94,14 @@ public class State {
 		System.out.print("\n\tMain: ");
 		stack.display( );
 		System.out.print("\n");
-		// How to display main:
-			// Prevent the stack from popping the first data structure which is entered
-			// Push main onto the stack at the begining of interpretation
-			//
 	}
 
 	/* prints useful debug information */
 	public void debug( ) {
 		System.out.println("[DEBUG] Functions: (not yet implemented in display()) \n");
 		System.out.println("[DEBUG] Globals: ");
-		data.display();
+		data.debug();
 		System.out.println("[DEBUG] Stack: ");
-		stack.display();
+		stack.debug();
 	}
 }

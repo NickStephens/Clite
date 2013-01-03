@@ -206,6 +206,36 @@ public class Semantics {
             Unary u = (Unary)e;
             return applyUnary(u.op, M(u.term, state));
         }
+	if (e instanceof CallExpression) {
+	    CallExpression c = (CallExpression) e;
+
+		//Determine the value of c's args
+		ArrayList<Value> args = new ArrayList<Value>();
+		for (Expression expr : c.args) {
+			Value val = M(expr, state);
+			args.add(val);
+		}
+
+		// push c's stackframe onto stack
+		state.push(new StackFrame(c.name, state));
+
+		// assign the arguments to the values of the parameters on c's stackframe
+		byValue(state.get_params(), args, state);
+
+		System.out.println("[DEBUG - SEM] before interpretation of '" + c.name + "'");
+		state.debug();
+		// interpret called funcs body
+		M (state.get_instrs(), state);
+		System.out.println("[DEBUG - SEM] after interpretation of '" + c.name + "'");
+		state.debug();
+	
+		Value ret = state.get(new Variable("FunctionID"));
+
+		// pop called func's stackframe
+		state.pop();
+
+		return ret;
+    	}
         throw new IllegalArgumentException("should never reach here");
     }
 

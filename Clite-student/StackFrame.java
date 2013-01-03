@@ -56,9 +56,10 @@ public class StackFrame { // Activation Record
 
 	/* sets the var to the val, if not found in current stack frame
 	   it sets the var in slink 
-	   To make Clite interpret the program with dynamic typing, switch
+	   To make Clite interpret the program with dynamic scoping, switch
 	   slink to dlink */
 	public StackFrame set(VariableRef var, Value val) {
+
 		if (frame_state.containsKey(var))
 			onion(var, val);
 		else
