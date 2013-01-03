@@ -1,34 +1,39 @@
-import java.util.*;
+public class State {
+	
+	private Functions text;
+	private Stack stack;
+	// Heap
+	// bbs
+	// data
 
-public class State extends HashMap<VariableRef, Value> { 
-    // Defines the set of variables and their associated values 
-    // that are active during interpretation
-    
-    public State( ) { }
-    
-    public State(VariableRef key, Value val) {
-        put(key, val);
-    }
-    
-    public State onion(VariableRef key, Value val) {
-        put(key, val);
-        return this;
-    }
-    
-    public State onion (State t) {
-        for (VariableRef key : t.keySet( ))
-            put(key, t.get(key));
-        return this;
-    }
-
-   public void display() {
-	String tm = "{ ";
-	Iterator it = entrySet().iterator();
-	while(it.hasNext()) {
-		tm += it.next() + " ,";
+	public State (StackFrame stk_frm, Functions funcs) {
+		text = funcs; 
+		stack = new Stack(stk_frm);
 	}
-	tm = tm.substring(0, tm.length() - 2) + " }";
-	System.out.println(tm);
-  } 
 
+	public State (Functions funcs) {
+		text = funcs;
+		stack = new Stack( );
+	}
+
+	/* returns the instruction of the function specified by id */
+	public Block get_func_intrs(String id) {
+		return text.get(id).body;
+	}
+
+	/* pushes a StackFrame onto the stack */
+	public State push(StackFrame stk_frm) {
+		stack.push(stk_frm);
+		return this;
+	}
+
+	/* returns StackFrame on top of stack, alters state's stack in process */
+	public StackFrame pop( ) {
+		return stack.pop();
+	}
+
+	public void display ( ) {
+		System.out.println("Functions: (not yet implemented in display()) \n");
+		stack.display();
+	}
 }

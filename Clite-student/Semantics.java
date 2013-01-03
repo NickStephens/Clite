@@ -5,14 +5,30 @@
 public class Semantics {
 
     State M (Program p) { 
-	// The meaning of a program is the meaning of main with both the globals and main's StackFrames on the stack.
-	Function main = p.function.get("main");
+	// The meaning of a program is the meaning of main with both the globals and main's StackFrames on the state's stack.
+	
+	// pushing globals, then main
+	state = initialState(p);
 
-        return M (p.body, initialState(p.decpart)); 
+        //return M (p.body, initialState(p.decpart)); 
     }
   
-    State initialState (Declarations d) {
-    	// This should be modified for arrayRefs
+    /* returns the initial state of a program
+       pushes globals then main onto stack */
+    State initialState (Program p) {
+    	State state = new State(p.functions);
+	StackFrame globals = new StackFrame("globals", p.globals);
+	
+	Function main_func = p.functions.get("main");
+	StackFrame main = new StackFrame("main", globals, null, main_func.params);
+	main.onion(main_func.locals);
+
+	state.push(globals);
+	state.push(main);
+
+	return state;
+			
+	/*
         State state = new State();
         Value intUndef = new IntValue();
         for (Declaration decl : d)
@@ -24,6 +40,7 @@ public class Semantics {
 	    else 
             	state.put(decl.v, Value.mkValue(decl.t));
         return state;
+    	*/
     }
   
     State M (Statement s, State state) {

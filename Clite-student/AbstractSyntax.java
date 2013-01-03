@@ -137,6 +137,13 @@ class Functions extends ArrayList<Function> {
 	// Functions = Function*
 	// (a list of functions f1, f2, ..., fn)
 
+	public Function get(String name) {
+		for (Function fi : this) 
+			if (fi.id.equals(name)) 
+				return fi;
+		throw new IllegalArgumentException("no func '" + name + "' has been defined");
+	}
+
 }
 
 class Function {

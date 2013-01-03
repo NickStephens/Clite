@@ -3,6 +3,11 @@ public class Stack {
 	private StackFrame head;
 	private Stack body;
 
+	public Stack ( ) {
+		head = null;
+		head = null;
+	}
+	
 	public Stack (StackFrame stk_frm) {
 		head = stk_frm;
 		body = null;
@@ -20,14 +25,28 @@ public class Stack {
 
 	/* pops the current head off the stack
      	   returns a reference to body */
-	public Stack pop () {
-		return body; 
-	}
+	public StackFrame pop () {
+		// getting the proper frame
+		StackFrame ret = head; 
+
+		// setting up the stack
+		if (body == null) { 
+			head = null;
+			this.body = null;
+		} else {
+			head = body.pop();
+			this.body = this.body.body;
+		}
+
+		return ret;
+	}	
 
 	/* pushes a new StackFrame onto the stack
-	   returns a reference to a new stack with the push */
+	   returns a reference to the stack */
 	public Stack push (StackFrame stk_frm) {
-		return new Stack ( stk_frm, this);
+		body = this;
+		head = stk_frm;
+		return  this;
 	}
 
 	public void display() {

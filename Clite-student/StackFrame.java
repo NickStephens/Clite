@@ -5,14 +5,36 @@ public class StackFrame { // Activation Record
 	private String name;
 	private StackFrame slink;
 	private StackFrame dlink;
-	private State frame_state; // This may have to change to a keyless data structure, if I'm not able to distinguish globals ahead of time.	
+	private FrameState frame_state; // This may have to change to a keyless data structure, if I'm not able to distinguish globals ahead of time.	
 	// Return Address
 	// Saved Frame Pointer
 
-	public StackFrame (String stack_name, StackFrame static_link, StackFrame dynamic_link) {
-		name = stack_name;
+	public StackFrame (String frame_name) {
+		name = frame_name;
+		slink = null;
+		dlink = null;
+		frame_state = new FrameState();
+	}
+
+	public StackFrame (String frame_name, StackFrame static_link, StackFrame dynamic_link, Declarations decls) {
+		name = frame_name;
 		slink = static_link; dlink = dynamic_link;
-		frame_state = new State();
+		frame_state = new FrameState();
+		for (Declaration di : decls) 
+			frame_state.onion(di.v, Value.mkValue(di.t));
+	}	
+
+	public StackFrame (String frame_name, StackFrame static_link, StackFrame dynamic_link) {
+		name = frame_name;
+		slink = static_link; dlink = dynamic_link;
+		frame_state = new FrameState();
+	}
+
+	/* updates the StackFrames state given a VariableRef and Value
+	   returns a reference to the StackFrame (itself) */
+	public StackFrame onion (VariableRef var, Value val) {
+		frame_state.onion(var, val);
+		return this;
 	}
 
 	/* updates the StackFrame's state given a StackFrame 
