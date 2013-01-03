@@ -7,10 +7,7 @@ public class Semantics {
     State M (Program p) { 
 	// The meaning of a program is the meaning of main with both the globals and main's StackFrames on the state's stack.
 	
-	// pushing globals, then main
-	return initialState(p);
-
-        //return M (p.body, initialState(p.decpart)); 
+        return M (new CallStatement("main", new Expressions()), initialState(p)); 
     }
   
     /* returns the initial state of a program
@@ -20,10 +17,10 @@ public class Semantics {
 	StackFrame globals = new StackFrame("globals", p.globals);
 	
 	Function main_func = p.functions.get("main");
-	StackFrame main = new StackFrame("main", globals, null, main_func.params, main_func.locals);
+	//StackFrame main = new StackFrame("main", globals, null, main_func.params, main_func.locals);
 
 	state.push(globals);
-	state.push(main);
+	//state.push(main);	
 
 	return state;
 			
