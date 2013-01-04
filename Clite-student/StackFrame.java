@@ -30,8 +30,16 @@ public class StackFrame { // Activation Record
 			dlink = null;
 		}
 		frame_state = new FrameState();
-		for (Declaration di : st.get_func_vars(frame_name)) 
-			frame_state.onion(di.v, Value.mkValue(di.t));
+		for (Declaration di : st.get_func_vars(frame_name)) {
+			if (di instanceof VariableDecl)
+				frame_state.onion(di.v, Value.mkValue(di.t));
+			else if (di instanceof ArrayDecl) {
+				ArrayDecl ad = (ArrayDecl) di;
+				for(int i=0; i < ad.size.intValue(); i++) 
+					frame_state.onion(new ArrayRef(di.v.toString(), new IntValue(i)), Value.mkValue(di.t));
+			}
+		}
+
 	}
 	
 	public StackFrame (String frame_name, StackFrame static_link, StackFrame dynamic_link, Declarations params, Declarations locals) {
