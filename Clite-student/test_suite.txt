@@ -13,6 +13,7 @@ special -n options is negation and all categories specified are NOT tested
 	
 
 :Blocks
+	:Return Statement in block
 
 :Assignments
 
