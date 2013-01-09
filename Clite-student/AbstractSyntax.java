@@ -542,7 +542,7 @@ class Operator {
     final static String DIV = "/";
     // UnaryOp = !    
     final static String NOT = "!";
-    final static String NEG = "-";
+    final static String NEG = "-NEG"; //This has been changed from "-" to "-NEG" to avoid ambiguity with MINUS
     // CastOp = int | float | char
     final static String INT = "int";
     final static String FLOAT = "float";

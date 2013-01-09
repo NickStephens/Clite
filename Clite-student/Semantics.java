@@ -81,10 +81,8 @@ public class Semantics {
   
     State M (Block b, State state) {
         for (Statement s : b.members) {
-	    if (saw_ret) { // if the last statement contained a return
-	    	saw_ret = false;
+	    if (saw_ret) // if the last statement contained a return
 	    	return state;
-	    }
             state = M (s, state);
 	}
         return state;
@@ -98,7 +96,7 @@ public class Semantics {
     }
   
     State M (Loop l, State state) {
-        if (M (l.test, state).boolValue( ))
+        if (M (l.test, state).boolValue( ) && !saw_ret)
             return M(l, M (l.body, state));
         else return state;
     }
@@ -122,6 +120,9 @@ public class Semantics {
 
 	// pop called func's stackframe
 	state.pop();
+
+	// reset saw_ret to catch next function call's return
+	saw_ret = false;
 
 	return state;
     }
