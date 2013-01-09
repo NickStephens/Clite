@@ -6,6 +6,8 @@ import java.util.*;
 
 public class Semantics {
 
+    private boolean saw_ret = false; // a global flag which causes return statements to stop execution of a block
+
     State M (Program p) { 
 	// The meaning of a program is the meaning of main with both the globals and main's StackFrames on the state's stack.
 
@@ -79,6 +81,10 @@ public class Semantics {
   
     State M (Block b, State state) {
         for (Statement s : b.members) {
+	    if (saw_ret) { // if the last statement contained a return
+	    	saw_ret = false;
+	    	return state;
+	    }
             state = M (s, state);
 	}
         return state;
@@ -121,6 +127,7 @@ public class Semantics {
     }
 
     State M (Return r, State state) {
+	saw_ret = true;
     	return state.set(r.target, M(r.result, state));
     }
 
@@ -175,7 +182,7 @@ public class Semantics {
             return new IntValue(-v.intValue( ));
         else if (op.val.equals(Operator.FLOAT_NEG))
             return new FloatValue(-v.floatValue( ));
-        else if (op.val.equals(Operator.I2F))
+        else if (op.val.equals(Operator.I2F)) 
             return new FloatValue((float)(v.intValue( ))); 
         else if (op.val.equals(Operator.F2I))
             return new IntValue((int)(v.floatValue( )));

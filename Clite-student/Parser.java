@@ -345,7 +345,13 @@ public class Parser {
     private Expression factor() {
         // Factor --> [ UnaryOp ] Primary 
         if (isUnaryOp()) {
-            Operator op = new Operator(match(token.type()));
+	    Operator op;
+	    if (token.type().equals(TokenType.Not)) 
+            	op = new Operator(match(token.type()));
+            else {
+		op = new Operator(Operator.NEG);
+		token = lexer.next();
+	    }
             Expression term = primary();
             return new Unary(op, term);
         }
