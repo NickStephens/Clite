@@ -2,7 +2,7 @@
 // The meaning M of a Statement is a State
 // The meaning M of a Expression is a Value
 
-public class Semantics {
+public class CodeGen {
 
     State M (Program p) { 
         return M (p.body, initialState(p.decpart)); 
@@ -164,8 +164,8 @@ public class Semantics {
         Program out = TypeTransformer.T(prog, map);
         System.out.println("Output AST");
         out.display();    // student exercise
-        Semantics semantics = new Semantics( );
-        State state = semantics.M(out);
+        CodeGen codegen = new CodeGen( );
+        State state = codegen.M(out);
         System.out.println("Final State");
         state.display( );  // student exercise
     }
