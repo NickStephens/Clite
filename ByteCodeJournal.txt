@@ -1,0 +1,13 @@
+Nick Stephens
+
+----------------------------------
+Producing JVM Byte Code for CliteF
+----------------------------------
+
+Jan 12, 2013
+
+Questions:
+a. When in the compiling process should byte code be produced?
+b. What kind of formatting or boiler plate do I need to abide by?
+
+a. Probably in Semantic Interpretation
