@@ -20,6 +20,10 @@ public class TypeTransformer {
     public static Expression T (Expression e, TypeMap tm) {
         if (e instanceof Value) 
             return e;
+	if (e instanceof ArrayRef) {
+	    ArrayRef a = (ArrayRef) e;
+	    return new ArrayRef(a.id, T(a.index, tm));
+	}	
         if (e instanceof VariableRef) 
             return e;
         if (e instanceof Binary) {
@@ -86,9 +90,9 @@ public class TypeTransformer {
         if (s instanceof Skip) return s;
         if (s instanceof Assignment) {
             Assignment a = (Assignment)s;
-	    Variable target;
+	    VariableRef target;
 	    if (a.target instanceof ArrayRef) {
- 	           target = new Variable(a.target.id);
+ 	           target = (ArrayRef) T(a.target, tm);
 	    }
 	    else {
 	    	   target = (Variable) a.target;

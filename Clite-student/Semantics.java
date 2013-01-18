@@ -170,6 +170,19 @@ public class Semantics {
             return new FloatValue(v1.floatValue( ) * v2.floatValue( ));
         if (op.val.equals(Operator.FLOAT_DIV)) 
             return new FloatValue(v1.floatValue( ) / v2.floatValue( ));
+
+	if (op.val.equals(Operator.BOOL_LT)) 
+            return new BoolValue(v1.intValue( ) < v2.intValue( ));
+        if (op.val.equals(Operator.BOOL_GT)) 
+            return new BoolValue(v1.intValue( ) > v2.intValue( ));
+        if (op.val.equals(Operator.BOOL_EQ)) 
+            return new BoolValue(v1.boolValue( ) == v2.boolValue( ));
+        if (op.val.equals(Operator.BOOL_NE)) 
+            return new BoolValue(v1.boolValue( ) != v2.boolValue( ));
+		if (op.val.equals(Operator.AND))
+			return new BoolValue(v1.boolValue( ) && v2.boolValue( ));
+		if (op.val.equals(Operator.OR))
+			return new BoolValue(v1.boolValue( ) || v2.boolValue( ));
         throw new IllegalArgumentException("should never reach here");
 	
     } 
