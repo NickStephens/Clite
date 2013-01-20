@@ -11,3 +11,13 @@ a. When in the compiling process should byte code be produced?
 b. What kind of formatting or boiler plate do I need to abide by?
 
 a. Probably in Semantic Interpretation
+
+Jan 19, 2013
+
+-Need to write to a file
+-Need to be able to extract type of values and variables (JVM has type-specific instructions)
+-Need to be able to statically determine stack size and local size of a function
+-Need to be able to generically translate high-level control structures into their low-level equivalents
+
+All functions will be static, and the amount and types of their arguments must be deterministic.
+
