@@ -10,6 +10,7 @@ public class CodeGen {
 
 		// New class required symbol table to map variable names to numbers
 		// SymbolTable symtable = new SymbolTable(p.decpart);
+		// The constructor for SymbolTable must tie numbers to symbols, (ie <local_0, a>, <local_1, b> ...) Parameters will have to be accounted for
 
 		// Intiliaze file to write to here.
 		// Call the M (p.body, initialState(p.decpart));
@@ -56,10 +57,15 @@ public class CodeGen {
     }
   
     State M (Skip s, State state) {
+		// return
         return state;
     }
   
     State M (Assignment a, State state) {
+		// write the meaning of the source expression
+		// M(assess_out, a.source, symtable)
+		// assess_out.writeln("xstore " + symtable.get(a.target));
+
     	if (a.target instanceof ArrayRef) {
 		ArrayRef b = (ArrayRef) a.target;
 		ArrayRef r = new ArrayRef(b.id, M(b.index, state));
@@ -71,6 +77,7 @@ public class CodeGen {
     }
   
     State M (Block b, State state) {
+		// for each statement in the block write the assembly of the statement
         for (Statement s : b.members) {
             state = M (s, state);
 	}
@@ -78,6 +85,8 @@ public class CodeGen {
     }
   
     State M (Conditional c, State state) {
+		// translate conditional
+		// 		translate the bodies of each conditional
         if (M(c.test, state).boolValue( ))
             return M (c.thenbranch, state);
         else
@@ -85,16 +94,23 @@ public class CodeGen {
     }
   
     State M (Loop l, State state) {
+		// translate the conditional
+		//		translate the body
         if (M (l.test, state).boolValue( ))
             return M(l, M (l.body, state));
         else return state;
     }
 
     Value applyBinary (Operator op, Value v1, Value v2) {
+		//for each one of these:
+		//	push the values of v1 and v2 (which I think are stored as strings)
         StaticTypeCheck.check( ! v1.isUndef( ) && ! v2.isUndef( ),
                "reference to undef value");
         if (op.val.equals(Operator.INT_PLUS)) 
             return new IntValue(v1.intValue( ) + v2.intValue( ));
+			// asses_out.writeln("bipush " + v1);
+			// asses_out.writeln("bipush " + v2);
+			// asses_out.writeln("iadd");
         if (op.val.equals(Operator.INT_MINUS)) 
             return new IntValue(v1.intValue( ) - v2.intValue( ));
         if (op.val.equals(Operator.INT_TIMES)) 
@@ -133,6 +149,10 @@ public class CodeGen {
     } 
     
     Value applyUnary (Operator op, Value v) {
+		// push the value onto the stack
+		// asses_out.writeln("bipush " + v)
+		// asses_out.writeln("i2f") ; or something similar
+
         StaticTypeCheck.check( ! v.isUndef( ),
                "reference to undef value");
         if (op.val.equals(Operator.NOT))
@@ -154,21 +174,26 @@ public class CodeGen {
 
     Value M (Expression e, State state) {
         if (e instanceof Value) 
+			// assess_out.writeln("bipush " + (Value)e);
             return (Value)e;
-	if (e instanceof ArrayRef) {
-	    ArrayRef a = (ArrayRef) e;
-	    ArrayRef key = new ArrayRef(a.id, M(a.index, state));
-	    return (Value)(state.get(key));
-	}
+		if (e instanceof ArrayRef) {
+			// xload symtable.get(a.id)
+	    	ArrayRef a = (ArrayRef) e;
+	    	ArrayRef key = new ArrayRef(a.id, M(a.index, state));
+	    	return (Value)(state.get(key));
+		}
         if (e instanceof VariableRef) { 
+			// xload symtable.get(a.id)
             return (Value)(state.get(e));
 	    }
         if (e instanceof Binary) {
+			// I think applyBinay should handle the work here (I don't know if this is good design?)
             Binary b = (Binary)e;
             return applyBinary (b.op, 
                                 M(b.term1, state), M(b.term2, state));
         }
         if (e instanceof Unary) {
+			// I think applyUnary works similarly to applyBinary
             Unary u = (Unary)e;
             return applyUnary(u.op, M(u.term, state));
         }

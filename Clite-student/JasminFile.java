@@ -34,4 +34,9 @@ public class JasminFile extends FileWriter {
 		write(".limit locals" + " " + dec.size() + "\n");
 		write("\n");
 	}	
+	
+	public void writeln(String to_write) throws IOException {
+		write(to_write);
+		write("\n");
+	}
 }
