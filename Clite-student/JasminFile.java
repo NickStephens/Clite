@@ -22,15 +22,19 @@ public class JasminFile extends FileWriter {
 		write("\n");
 	}
 
-	/* I'm not quite sure how to statically determine stack and locals limits
-		Stack limit is the maximum amount of items the stack will hold, this includes
-		function calls (I think)
-		Locals limit is how many variable we need to store in a call, keep in mind
-		the JVM passes parameters through locals 0,1,2, and so on
+	/*
+		Locals limit is how many variables we need to store in a call, keep in mind
+		the JVM passes parameters through locals 0,1,2, and so on, so the locals 
+		limit should be the number of parameters plus the numbers of local variables declared
+		(How will globals work?)
 	*/
-	public void allocate(Declarations dec) throws IOException {
+	public void preamble(Declarations dec) throws IOException {
 		write(".method public static main([Ljava/lang/String;)V\n");
-		write(".limit stack" + " " +  dec.size() + " ; information gathered from declarations\n");
+		write(".limit stack" + " " + "2" + " " + " ; information gathered from declarations\n");
+		// due to how Clite's expressions over operators are evaluated
+		// we can safely limit the stack to two elements; however this will
+		// change when we're generating code for CliteF and we need to push
+		// the arguments to a function on the stack
 		write(".limit locals" + " " + dec.size() + "\n");
 		write("\n");
 	}	

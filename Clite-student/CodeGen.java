@@ -22,13 +22,12 @@ public class CodeGen {
 		// assem_out.JVMBoiler()
 
 		// allocate write the function type signature, then allocates stack and local space
-		// assem_out.allocate(p.decpart);
+		// assem_out.preamble(p.decpart);
 
 		// text goes through the body and writes the instructions
 		// write loosely corresponds to M
-		// write(assem_out, p.body, symtable);
+		// write(p.body, symtable, assem_out);
 
-		// FileStream.print(main);
         return M (p.body, initialState(p.decpart)); 
     }
   
@@ -213,6 +212,7 @@ public class CodeGen {
         System.out.println("Output AST");
         out.display();    // student exercise
         CodeGen codegen = new CodeGen( );
+		//codegen.M(out, args[0])
         State state = codegen.M(out);
         System.out.println("Final State");
         state.display( );  // student exercise

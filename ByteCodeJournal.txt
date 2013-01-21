@@ -30,4 +30,12 @@ Implementation Details:
 
 All functions will be static, and the amount and types of their arguments must be deterministic.
 
+Jan 20, 2012
+
+Conceptual Details:
+-I've been able to limit the stack (for plain Clite) to two elements
+-A symbol table is necessary to track which variables are tied to which local's (locals in the JVM are represented with integers)
+
+Implementation Details:
+-When pushing values (or constants) onto the stack, I will use the "ldc" instruction
 
