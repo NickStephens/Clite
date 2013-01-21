@@ -14,10 +14,20 @@ a. Probably in Semantic Interpretation
 
 Jan 19, 2013
 
+Conceptual Details:
 -Need to write to a file
 -Need to be able to extract type of values and variables (JVM has type-specific instructions)
 -Need to be able to statically determine stack size and local size of a function
 -Need to be able to generically translate high-level control structures into their low-level equivalents
 
+Implementation Details:
+-All meaning functions should begin writing to the file passed to it.
+	or
+-All meaning functions should begin returning strings
+-Write JVM boilerplate in M(Program)
+
+-Creating new class JasminFile, which is a descendent of Java Lib File
+
 All functions will be static, and the amount and types of their arguments must be deterministic.
+
 

@@ -5,6 +5,29 @@
 public class CodeGen {
 
     State M (Program p) { 
+
+	// void M (Program p, String filename) 
+
+		// New class required symbol table to map variable names to numbers
+		// SymbolTable symtable = new SymbolTable(p.decpart);
+
+		// Intiliaze file to write to here.
+		// Call the M (p.body, initialState(p.decpart));
+
+		// jfile = some operation on the filename removing the '.cpp' extension
+
+		// File assem_out = new JasminFile(jfile + ".j")
+
+		// assem_out.JVMBoiler()
+
+		// allocate write the function type signature, then allocates stack and local space
+		// assem_out.allocate(p.decpart);
+
+		// text goes through the body and writes the instructions
+		// write loosely corresponds to M
+		// write(assem_out, p.body, symtable);
+
+		// FileStream.print(main);
         return M (p.body, initialState(p.decpart)); 
     }
   
