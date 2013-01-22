@@ -1,78 +1,101 @@
 // Following is the semantics class:
 // The meaning M of a Statement is a State
 // The meaning M of a Expression is a Value
+import java.util.*;
+import java.io.*;
 
 public class CodeGen {
 
-    State M (Program p) { 
+	private class Pair {
+			
+			Type type;
+			Integer index;
 
-	// void M (Program p, String filename) 
+			public Pair(Type t, Integer i) {
+				type = t; index = i;
+			}
+
+			public String toString ( ) {
+				return "< " + type + ", " + index + ">";
+			}
+
+	}
+	
+	private class SymbolTable extends HashMap<Variable, Pair> { 
+
+		Type getType (Variable v) {
+			return get(v).type;
+		}
+
+		Integer getIndex (Variable v) {
+			return get(v).index;
+		}
+
+		void display ( ) {
+			String tm = "{ ";
+			Iterator it = entrySet().iterator();
+			while(it.hasNext()) {
+				tm += it.next() + " ,";
+			}
+			tm = tm.substring(0, tm.length() - 2) + " }";
+			System.out.println(tm);
+		  } 
+	
+	}
+
+	void M (Program p, String filename) throws IOException {
 
 		// New class required symbol table to map variable names to numbers
-		// SymbolTable symtable = new SymbolTable(p.decpart);
+		SymbolTable symtable = init_symboltable(p.decpart);
 		// The constructor for SymbolTable must tie numbers to symbols, (ie <local_0, a>, <local_1, b> ...) Parameters will have to be accounted for
 
 		// Intiliaze file to write to here.
 		// Call the M (p.body, initialState(p.decpart));
 
-		// jfile = some operation on the filename removing the '.cpp' extension
+		String jfile = filename.substring(0,filename.length()-4);
 
-		// File assem_out = new JasminFile(jfile + ".j")
+		JasminFile assem_out = new JasminFile(jfile + ".j");
 
-		// assem_out.JVMBoiler()
+		assem_out.JVMBoiler();
 
 		// allocate write the function type signature, then allocates stack and local space
-		// assem_out.preamble(p.decpart);
+		assem_out.preamble(p.decpart);
 
 		// text goes through the body and writes the instructions
 		// write loosely corresponds to M
-		// write(p.body, symtable, assem_out);
+		// M(p.body, symtable, assem_out);
 
-        return M (p.body, initialState(p.decpart)); 
+		assem_out.close();
     }
   
-    State initialState (Declarations d) {
-    	// This should be modified for arrayRefs
-        State state = new State();
-        Value intUndef = new IntValue();
-        for (Declaration decl : d)
-	    if (decl instanceof ArrayDecl) {
-	    	ArrayDecl adecl = (ArrayDecl) decl;
-	    	for (int i=0; i<(adecl.size.intValue());i++)
-			state.put(new ArrayRef(adecl.v.toString(), new IntValue(i)), Value.mkValue(adecl.t));
-		}
-	    else 
-            	state.put(decl.v, Value.mkValue(decl.t));
-        return state;
+    SymbolTable init_symboltable (Declarations d) {
+        SymbolTable symtable = new SymbolTable();
+        for (int i=0; i < d.size(); i++) 
+			symtable.put(d.get(i).v, new Pair(d.get(i).t, i));
+        return symtable;
     }
-  
-    State M (Statement s, State state) {
-        if (s instanceof Skip) return M((Skip)s, state);
-        if (s instanceof Assignment)  return M((Assignment)s, state);
-        if (s instanceof Conditional)  return M((Conditional)s, state);
-        if (s instanceof Loop)  return M((Loop)s, state);
-        if (s instanceof Block)  return M((Block)s, state);
+
+    void M (Statement s, SymbolTable symtable, JasminFile jfile) {
+        if (s instanceof Skip) return M((Skip)s, symtable, jfile);
+        if (s instanceof Assignment)  return M((Assignment)s, symtable, jfile);
+        if (s instanceof Conditional)  return M((Conditional)s, symtable, jfile);
+        if (s instanceof Loop)  return M((Loop)s, symtable, jfile);
+        if (s instanceof Block)  return M((Block)s, symtable, jfile);
         throw new IllegalArgumentException("should never reach here");
     }
   
-    State M (Skip s, State state) {
-		// return
-        return state;
+    void M (Skip s, SymbolTable symtable, JasminFile jfile) {
+		return;
     }
   
-    State M (Assignment a, State state) {
+    void M (Assignment a, SymbolTable symtable, JasminFile jfile) {
 		// write the meaning of the source expression
-		// M(assess_out, a.source, symtable)
-		// assess_out.writeln("xstore " + symtable.get(a.target));
 
-    	if (a.target instanceof ArrayRef) {
-		ArrayRef b = (ArrayRef) a.target;
-		ArrayRef r = new ArrayRef(b.id, M(b.index, state));
-        	State st = state.onion(r, M (a.source, state));
-		return st;
-	}
-	State st = state.onion(a.target, M(a.source, state));
-	return st;
+		M(a.source, symtable, jfile); // this should write the expression 
+									  // onto the stack
+
+
+		// assess_out.writeln("xstore " + symtable.get(a.target));
     }
   
     State M (Block b, State state) {
@@ -217,4 +240,21 @@ public class CodeGen {
         System.out.println("Final State");
         state.display( );  // student exercise
     }
+	*/
+
+	public static void main(String args[]) throws IOException {
+        Parser parser  = new Parser(new Lexer(args[0]));
+        Program prog = parser.program();
+        prog.display();    // student exercise
+        System.out.println("\nBegin type checking...");
+        System.out.println("Type map:");
+        TypeMap map = StaticTypeCheck.typing(prog.decpart);
+        map.display();    // student exercise
+        StaticTypeCheck.V(prog);
+        Program out = TypeTransformer.T(prog, map);
+        System.out.println("Output AST");
+        out.display();    // student exercise
+        CodeGen codegen = new CodeGen( );
+		codegen.M(out, args[0]);
+	}	
 }
