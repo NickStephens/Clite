@@ -94,19 +94,30 @@ public class CodeGen {
 		M(a.source, symtable, jfile); // this should write the expression 
 									  // onto the stack
 
-
-		// assess_out.writeln("xstore " + symtable.get(a.target));
+		Type target_type = symtable.getType(a.target);
+		if (target_type.equals(Type.INT)) {
+			String store = "istore";
+		} else if (target_type.equals(Type.FLOAT)) {
+			String store = "fstore";
+		} else {
+		// if (target_type.equals(Type.CHAR))
+			throw new IllegalArgumentException("should never reach here");
+		}
+		
+		assess_out.writeln(store + symtable.getIndex(a.target));
     }
   
-    State M (Block b, State state) {
+    void M (Block b, SymbolTable symtable, JasminFile jfile) {
 		// for each statement in the block write the assembly of the statement
         for (Statement s : b.members) {
-            state = M (s, state);
-	}
-        return state;
+            M (s, symtable, jfile);
+		}
+        return;
     }
+
+	/*
   
-    State M (Conditional c, State state) {
+    void M (Conditional c, State state) {
 		// translate conditional
 		// 		translate the bodies of each conditional
         if (M(c.test, state).boolValue( ))
@@ -122,6 +133,8 @@ public class CodeGen {
             return M(l, M (l.body, state));
         else return state;
     }
+
+	*/
 
     Value applyBinary (Operator op, Value v1, Value v2) {
 		//for each one of these:
