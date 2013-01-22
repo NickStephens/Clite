@@ -63,9 +63,9 @@ public class CodeGen {
 
 		// text goes through the body and writes the instructions
 		// write loosely corresponds to M
-		// M(p.body, symtable, assem_out);
+		M(p.body, symtable, assem_out);
 
-		assem_out.close();
+		assem_out.writeout();
     }
   
     SymbolTable init_symboltable (Declarations d) {
@@ -75,12 +75,23 @@ public class CodeGen {
         return symtable;
     }
 
-    void M (Statement s, SymbolTable symtable, JasminFile jfile) {
-        if (s instanceof Skip) return M((Skip)s, symtable, jfile);
-        if (s instanceof Assignment)  return M((Assignment)s, symtable, jfile);
-        if (s instanceof Conditional)  return M((Conditional)s, symtable, jfile);
-        if (s instanceof Loop)  return M((Loop)s, symtable, jfile);
-        if (s instanceof Block)  return M((Block)s, symtable, jfile);
+    void M (Statement s, SymbolTable symtable, JasminFile jfile) throws IOException {
+        if (s instanceof Skip) { 
+			M((Skip)s, symtable, jfile);
+			return;
+        } if (s instanceof Assignment) { 
+			M((Assignment)s, symtable, jfile);
+			return;
+        } if (s instanceof Conditional) { 
+			M((Conditional)s, symtable, jfile);
+			return;
+        } if (s instanceof Loop) { 
+			M((Loop)s, symtable, jfile);
+			return;
+        } if (s instanceof Block) { 
+			M((Block)s, symtable, jfile);
+			return;
+		}
         throw new IllegalArgumentException("should never reach here");
     }
   
@@ -88,13 +99,13 @@ public class CodeGen {
 		return;
     }
   
-    void M (Assignment a, SymbolTable symtable, JasminFile jfile) {
+    void M (Assignment a, SymbolTable symtable, JasminFile jfile) throws IOException {
 		// write the meaning of the source expression
 
 		M(a.source, symtable, jfile); // this should write the expression 
 									  // onto the stack
 
-		Type target_type = symtable.getType(a.target);
+		Type target_type = symtable.getType((Variable) a.target);
 		String store;
 		if (target_type.equals(Type.INT)) {
 			store = "istore";
@@ -105,10 +116,10 @@ public class CodeGen {
 			throw new IllegalArgumentException("should never reach here");
 		}
 		
-		assess_out.writeln(store + symtable.getIndex(a.target));
+		jfile.writeln(store + " " + symtable.getIndex((Variable) a.target));
     }
   
-    void M (Block b, SymbolTable symtable, JasminFile jfile) {
+    void M (Block b, SymbolTable symtable, JasminFile jfile) throws IOException {
 		// for each statement in the block write the assembly of the statement
         for (Statement s : b.members) {
             M (s, symtable, jfile);
@@ -137,9 +148,7 @@ public class CodeGen {
 
 	*/
 
-    void applyBinary (Operator op, Value v1, Value v2, JasminFile jfile) {
-        StaticTypeCheck.check( ! v1.isUndef( ) && ! v2.isUndef( ),
-               "reference to undef value");
+    void applyBinary (Operator op, JasminFile jfile) throws IOException {
         if (op.val.equals(Operator.INT_PLUS)) {
 			jfile.writeln("iadd");
 			return;
@@ -216,7 +225,7 @@ public class CodeGen {
         throw new IllegalArgumentException("should never reach here");
     } */ 
 
-    void M (Expression e, SymbolTable symtable, JasminFile jfile) { 
+    void M (Expression e, SymbolTable symtable, JasminFile jfile) throws IOException { 
         if (e instanceof Value) {
 			jfile.writeln("ldc " + (Value)e);
             return; 
@@ -229,7 +238,7 @@ public class CodeGen {
 			} else if (v_type.equals(Type.FLOAT)) {
 				load = "fload";
 			} else {
-				throw new IllegalArgumentsException("should never reach here");
+				throw new IllegalArgumentException("should never reach here");
 			}
 			jfile.writeln(load + symtable.get(v));
             return;
@@ -237,8 +246,9 @@ public class CodeGen {
         if (e instanceof Binary) {
 			// I think applyBinay should handle the work here (I don't know if this is good design?)
             Binary b = (Binary)e;
-            applyBinary (b.op, 
-            M(b.term1, symtable, jfile), M(b.term2, symtable, jfile), jfile);
+			M(b.term1, symtable, jfile);
+			M(b.term2, symtable, jfile);
+            applyBinary (b.op, jfile);
 			return;
         }
 		/*
@@ -250,26 +260,6 @@ public class CodeGen {
 		*/
         throw new IllegalArgumentException("should never reach here");
     }
-
-    public static void main(String args[]) {
-        Parser parser  = new Parser(new Lexer(args[0]));
-        Program prog = parser.program();
-        prog.display();    // student exercise
-        System.out.println("\nBegin type checking...");
-        System.out.println("Type map:");
-        TypeMap map = StaticTypeCheck.typing(prog.decpart);
-        map.display();    // student exercise
-        StaticTypeCheck.V(prog);
-        Program out = TypeTransformer.T(prog, map);
-        System.out.println("Output AST");
-        out.display();    // student exercise
-        CodeGen codegen = new CodeGen( );
-		//codegen.M(out, args[0])
-        State state = codegen.M(out);
-        System.out.println("Final State");
-        state.display( );  // student exercise
-    }
-	*/
 
 	public static void main(String args[]) throws IOException {
         Parser parser  = new Parser(new Lexer(args[0]));
@@ -284,6 +274,7 @@ public class CodeGen {
         System.out.println("Output AST");
         out.display();    // student exercise
         CodeGen codegen = new CodeGen( );
+		System.out.println("\nReducing into Jasmin Instructions...");
 		codegen.M(out, args[0]);
 	}	
 }

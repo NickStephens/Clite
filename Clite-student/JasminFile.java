@@ -40,7 +40,13 @@ public class JasminFile extends FileWriter {
 	}	
 	
 	public void writeln(String to_write) throws IOException {
+		write("\t");
 		write(to_write);
 		write("\n");
+	}
+
+	public void writeout( ) throws IOException {
+		write("\n.end method\n");
+		close();
 	}
 }
