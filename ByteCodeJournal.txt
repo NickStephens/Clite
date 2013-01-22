@@ -1,8 +1,8 @@
 Nick Stephens
 
-----------------------------------
-Producing JVM Byte Code for CliteF
-----------------------------------
+---------------------------------
+Producing JVM Byte Code for Clite
+---------------------------------
 
 Jan 12, 2013
 
@@ -12,7 +12,7 @@ b. What kind of formatting or boiler plate do I need to abide by?
 
 a. Probably in Semantic Interpretation
 
-Jan 19, 2013
+Jan 20, 2013
 
 Conceptual Details:
 -Need to write to a file
@@ -30,7 +30,7 @@ Implementation Details:
 
 All functions will be static, and the amount and types of their arguments must be deterministic.
 
-Jan 20, 2012
+Jan 21, 2012
 
 Conceptual Details:
 -I've been able to limit the stack (for plain Clite) to two elements
@@ -38,4 +38,6 @@ Conceptual Details:
 
 Implementation Details:
 -When pushing values (or constants) onto the stack, I will use the "ldc" instruction
-
+-SymbolTable may have to be expanded into carrying the symbol's type, this will allow us to quickly determine what type of storage instruction
+ needs to be written
+-The JVM lacks the instructions to strictly store and represent booleans and characters. Need to research examples
