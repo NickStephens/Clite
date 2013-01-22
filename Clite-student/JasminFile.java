@@ -9,8 +9,32 @@ public class JasminFile extends FileWriter {
 		filename = pathname;
 	}
 
+	private String sanitize_path( ) {
+		// Go backwards through the string and remove anything after the first
+		// extension and once the UNIX sperator is reached output string
+		boolean past_ext = false;
+		String san_str_rev = "";
+		for (int i=filename.length( )-1; i >= 0; i--) {
+			char cur = filename.charAt(i);
+			if (past_ext) {
+				if (cur != '/')
+					san_str_rev += cur;
+				else
+					break;
+			} else {
+				if (cur == '.')
+					past_ext = true;
+			}
+		}
+		String san_str = "";
+		for (int i=san_str_rev.length( )-1; i >= 0; i--) 
+			san_str += san_str_rev.charAt(i);
+
+		return san_str;
+	}
+				
 	public void JVMBoiler() throws IOException {
-		write(".class public" + " " + filename + "\n");
+		write(".class public" + " " + sanitize_path() + "\n");
 		write(".super java/lang/Object\n");
 		write("\n");
 		write(".method public <init>()V\n");
@@ -30,12 +54,13 @@ public class JasminFile extends FileWriter {
 	*/
 	public void preamble(Declarations dec) throws IOException {
 		write(".method public static main([Ljava/lang/String;)V\n");
-		write(".limit stack" + " " + "2" + " " + " ; information gathered from declarations\n");
+		write("\t.limit stack" + " " + "2" + " " + "\n");
 		// due to how Clite's expressions over operators are evaluated
 		// we can safely limit the stack to two elements; however this will
 		// change when we're generating code for CliteF and we need to push
 		// the arguments to a function on the stack
-		write(".limit locals" + " " + dec.size() + "\n");
+		write("\t.limit locals" + " " + (dec.size() + 1) + " " + 
+				"; #0 is reserved" + "\n");
 		write("\n");
 	}	
 	
@@ -45,8 +70,14 @@ public class JasminFile extends FileWriter {
 		write("\n");
 	}
 
+	public void writebranch(String to_write) throws IOException {
+		write(to_write);
+		write("\n");
+	}
+
 	public void writeout( ) throws IOException {
-		write("\n.end method\n");
+		writeln("\nreturn");
+		write(".end method\n");
 		close();
 	}
 }

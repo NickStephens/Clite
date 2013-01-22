@@ -70,8 +70,10 @@ public class CodeGen {
   
     SymbolTable init_symboltable (Declarations d) {
         SymbolTable symtable = new SymbolTable();
+		// We must increment all local #s by one, because #0 is reserved 
+		// (I think for the receiver object)
         for (int i=0; i < d.size(); i++) 
-			symtable.put(d.get(i).v, new Pair(d.get(i).t, i));
+			symtable.put(d.get(i).v, new Pair(d.get(i).t, (i + 1)));
         return symtable;
     }
 
