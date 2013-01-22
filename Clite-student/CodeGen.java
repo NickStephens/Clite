@@ -95,10 +95,11 @@ public class CodeGen {
 									  // onto the stack
 
 		Type target_type = symtable.getType(a.target);
+		String store;
 		if (target_type.equals(Type.INT)) {
-			String store = "istore";
+			store = "istore";
 		} else if (target_type.equals(Type.FLOAT)) {
-			String store = "fstore";
+			store = "fstore";
 		} else {
 		// if (target_type.equals(Type.CHAR))
 			throw new IllegalArgumentException("should never reach here");
@@ -136,23 +137,24 @@ public class CodeGen {
 
 	*/
 
-    Value applyBinary (Operator op, Value v1, Value v2) {
-		//for each one of these:
-		//	push the values of v1 and v2 (which I think are stored as strings)
+    void applyBinary (Operator op, Value v1, Value v2, JasminFile jfile) {
         StaticTypeCheck.check( ! v1.isUndef( ) && ! v2.isUndef( ),
                "reference to undef value");
-        if (op.val.equals(Operator.INT_PLUS)) 
-            return new IntValue(v1.intValue( ) + v2.intValue( ));
-			// asses_out.writeln("bipush " + v1);
-			// asses_out.writeln("bipush " + v2);
-			// asses_out.writeln("iadd");
-        if (op.val.equals(Operator.INT_MINUS)) 
-            return new IntValue(v1.intValue( ) - v2.intValue( ));
-        if (op.val.equals(Operator.INT_TIMES)) 
-            return new IntValue(v1.intValue( ) * v2.intValue( ));
-        if (op.val.equals(Operator.INT_DIV)) 
-            return new IntValue(v1.intValue( ) / v2.intValue( ));
+        if (op.val.equals(Operator.INT_PLUS)) {
+			jfile.writeln("iadd");
+			return;
+        } if (op.val.equals(Operator.INT_MINUS)) { 
+			jfile.writeln("isub");
+			return;
+        } if (op.val.equals(Operator.INT_TIMES)) {
+			jfile.writeln("imul");
+			return;
+        } if (op.val.equals(Operator.INT_DIV)) {
+			jfile.writeln("idiv");
+            return; 
+		}
         // student exercise
+		/*
 	if (op.val.equals(Operator.INT_LT))
 	    return new BoolValue(v1.intValue() < v2.intValue());
 	if (op.val.equals(Operator.INT_GT))
@@ -170,20 +172,27 @@ public class CodeGen {
 	    return new BoolValue(v1.floatValue() == v2.floatValue());
 	if (op.val.equals(Operator.FLOAT_NE))
 	    return new BoolValue(v1.floatValue() != v2.floatValue());
+		*/
 
-	if (op.val.equals(Operator.FLOAT_PLUS)) 
-            return new FloatValue(v1.floatValue( ) + v2.floatValue( ));
-        if (op.val.equals(Operator.FLOAT_MINUS)) 
-            return new FloatValue(v1.floatValue( ) - v2.floatValue( ));
-        if (op.val.equals(Operator.FLOAT_TIMES)) 
-            return new FloatValue(v1.floatValue( ) * v2.floatValue( ));
-        if (op.val.equals(Operator.FLOAT_DIV)) 
-            return new FloatValue(v1.floatValue( ) / v2.floatValue( ));
+		if (op.val.equals(Operator.FLOAT_PLUS)) { 
+			jfile.writeln("fadd");
+            return;
+		} if (op.val.equals(Operator.FLOAT_MINUS)) {
+			jfile.writeln("fsub");
+            return; 
+        } if (op.val.equals(Operator.FLOAT_TIMES)) {
+			jfile.writeln("fmul");
+            return; 
+        } if (op.val.equals(Operator.FLOAT_DIV)) {
+			jfile.writeln("fdiv");
+            return; 
+		}
         throw new IllegalArgumentException("should never reach here");
 	
     } 
     
-    Value applyUnary (Operator op, Value v) {
+	/* ignoring Unary ops for the time being
+    void applyUnary (Operator op, Value v) {
 		// push the value onto the stack
 		// asses_out.writeln("bipush " + v)
 		// asses_out.writeln("i2f") ; or something similar
@@ -205,33 +214,40 @@ public class CodeGen {
         else if (op.val.equals(Operator.I2C))
             return new CharValue((char)(v.intValue( )));
         throw new IllegalArgumentException("should never reach here");
-    } 
+    } */ 
 
-    Value M (Expression e, State state) {
-        if (e instanceof Value) 
-			// assess_out.writeln("bipush " + (Value)e);
-            return (Value)e;
-		if (e instanceof ArrayRef) {
-			// xload symtable.get(a.id)
-	    	ArrayRef a = (ArrayRef) e;
-	    	ArrayRef key = new ArrayRef(a.id, M(a.index, state));
-	    	return (Value)(state.get(key));
-		}
-        if (e instanceof VariableRef) { 
-			// xload symtable.get(a.id)
-            return (Value)(state.get(e));
+    void M (Expression e, SymbolTable symtable, JasminFile jfile) { 
+        if (e instanceof Value) {
+			jfile.writeln("ldc " + (Value)e);
+            return; 
+		} if (e instanceof Variable) { 
+			Variable v = (Variable) e;
+			Type v_type = symtable.getType(v);
+			String load = "null";
+			if (v_type.equals(Type.INT)) {
+				load = "iload";
+			} else if (v_type.equals(Type.FLOAT)) {
+				load = "fload";
+			} else {
+				throw new IllegalArgumentsException("should never reach here");
+			}
+			jfile.writeln(load + symtable.get(v));
+            return;
 	    }
         if (e instanceof Binary) {
 			// I think applyBinay should handle the work here (I don't know if this is good design?)
             Binary b = (Binary)e;
-            return applyBinary (b.op, 
-                                M(b.term1, state), M(b.term2, state));
+            applyBinary (b.op, 
+            M(b.term1, symtable, jfile), M(b.term2, symtable, jfile), jfile);
+			return;
         }
+		/*
         if (e instanceof Unary) {
 			// I think applyUnary works similarly to applyBinary
             Unary u = (Unary)e;
             return applyUnary(u.op, M(u.term, state));
         }
+		*/
         throw new IllegalArgumentException("should never reach here");
     }
 
