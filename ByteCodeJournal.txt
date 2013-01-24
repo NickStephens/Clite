@@ -30,7 +30,7 @@ Implementation Details:
 
 All functions will be static, and the amount and types of their arguments must be deterministic.
 
-Jan 21, 2012
+Jan 21, 2013
 
 Conceptual Details:
 -I've been able to limit the stack (for plain Clite) to two elements
@@ -41,3 +41,15 @@ Implementation Details:
 -SymbolTable may have to be expanded into carrying the symbol's type, this will allow us to quickly determine what type of storage instruction
  needs to be written
 -The JVM lacks the instructions to strictly store and represent booleans and characters. Need to research examples
+
+Jan 23, 2013
+
+Bugs:
+-The inclusion of parenthesised expressions will break the stack limit of two; however I think evaluation order is maintained
+
+Conceptual Details:
+-Booleans and characters are represented as Ints in Jasmin
+
+Implementation details:
+-Stack counter which counts the number of elements the largest expression needs
+-	This will be stored in a global variable and will be written once all expressions are traversed.
