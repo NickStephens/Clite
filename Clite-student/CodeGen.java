@@ -233,8 +233,18 @@ public class CodeGen {
 
     void M (Expression e, SymbolTable symtable, JasminFile jfile) throws IOException { 
         if (e instanceof Value) {
-			jfile.writeln("ldc " + (Value)e);
-            return; 
+			if (e instanceof IntValue || e instanceof FloatValue) {
+				jfile.writeln("ldc " + (Value)e);
+            	return; 
+			} if (e instanceof BoolValue) {
+				BoolValue b = (BoolValue) e;
+				jfile.writeln("ldc " + b.intValue());
+				return;
+			} if (e instanceof CharValue) {
+				CharValue c = (CharValue) e;
+				jfile.writeln("ldc " + c.intValue());
+				return;
+			}
 		} if (e instanceof Variable) { 
 			Variable v = (Variable) e;
 			Type v_type = symtable.getType(v);
