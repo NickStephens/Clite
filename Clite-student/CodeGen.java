@@ -242,7 +242,7 @@ public class CodeGen {
 			} else {
 				throw new IllegalArgumentException("should never reach here");
 			}
-			jfile.writeln(load + symtable.get(v));
+			jfile.writeln(load + " " +  symtable.getIndex(v));
             return;
 	    }
         if (e instanceof Binary) {
