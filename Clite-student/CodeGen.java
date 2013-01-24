@@ -202,30 +202,34 @@ public class CodeGen {
 	
     } 
     
-	/* ignoring Unary ops for the time being
-    void applyUnary (Operator op, Value v) {
+    void applyUnary (Operator op, JasminFile jfile) throws IOException {
 		// push the value onto the stack
 		// asses_out.writeln("bipush " + v)
 		// asses_out.writeln("i2f") ; or something similar
 
-        StaticTypeCheck.check( ! v.isUndef( ),
-               "reference to undef value");
-        if (op.val.equals(Operator.NOT))
-            return new BoolValue(!v.boolValue( ));
-        else if (op.val.equals(Operator.INT_NEG))
-            return new IntValue(-v.intValue( ));
-        else if (op.val.equals(Operator.FLOAT_NEG))
-            return new FloatValue(-v.floatValue( ));
-        else if (op.val.equals(Operator.I2F))
-            return new FloatValue((float)(v.intValue( ))); 
-        else if (op.val.equals(Operator.F2I))
-            return new IntValue((int)(v.floatValue( )));
-        else if (op.val.equals(Operator.C2I))
-            return new IntValue((int)(v.charValue( )));
-        else if (op.val.equals(Operator.I2C))
-            return new CharValue((char)(v.intValue( )));
+        if (op.val.equals(Operator.NOT)) {
+			//jfile.writeln("ineg");
+			//This will probably just be ineg, but I have not yet confirmed the boolean integer vals
+			return;
+        } else if (op.val.equals(Operator.INT_NEG)) {
+			jfile.writeln("ineg");
+			return;
+        } else if (op.val.equals(Operator.FLOAT_NEG)) {
+			jfile.writeln("fneg");
+			return;
+        } else if (op.val.equals(Operator.I2F)) {
+			jfile.writeln("i2f");
+			return;
+        } else if (op.val.equals(Operator.F2I)) {
+			jfile.writeln("f2i");
+			return;
+        } else if (op.val.equals(Operator.C2I)) {
+			return; // do nothing, maybe mark this in the symbol table or something, it will affect printing.
+        } else if (op.val.equals(Operator.I2C)) {
+			return; // do nothing
+		}
         throw new IllegalArgumentException("should never reach here");
-    } */ 
+    } 
 
     void M (Expression e, SymbolTable symtable, JasminFile jfile) throws IOException { 
         if (e instanceof Value) {
@@ -253,17 +257,16 @@ public class CodeGen {
             applyBinary (b.op, jfile);
 			return;
         }
-		/*
         if (e instanceof Unary) {
-			// I think applyUnary works similarly to applyBinary
             Unary u = (Unary)e;
-            return applyUnary(u.op, M(u.term, state));
+			M(u.term, symtable, jfile);
+            applyUnary(u.op, jfile);
+			return;
         }
-		*/
         throw new IllegalArgumentException("should never reach here");
     }
 
-	public static void main(String args[]) throws IOException {
+	public static void main(String args[]) throws IOException, InterruptedException {
         Parser parser  = new Parser(new Lexer(args[0]));
         Program prog = parser.program();
         prog.display();    // student exercise
@@ -278,5 +281,17 @@ public class CodeGen {
         CodeGen codegen = new CodeGen( );
 		System.out.println("\nReducing into Jasmin Instructions...");
 		codegen.M(out, args[0]);
+
+		System.out.println();
+
+		System.out.println("Assembly Produced:");
+		Process p = Runtime.getRuntime().exec("cat " +  args[0].substring(0, (args[0].length() - 4)) + ".j");
+		p.waitFor();
+		BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
+		String line = r.readLine();
+		while(line != null) {
+			System.out.println(line);
+			line = r.readLine();
+		}
 	}	
 }
