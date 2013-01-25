@@ -168,28 +168,36 @@ public class CodeGen {
 		}
         // student exercise
 			if (op.val.equals(Operator.INT_LT)) {
-				jfile.write("if_icmplt ")
+				jfile.write("\tif_icmplt ");
 				jfile.write_relop_body(branch_cnt);
 				branch_cnt++;
 				return;
 			} if (op.val.equals(Operator.INT_GT)) {
-				jfile.write("if_icmpgt ");
+				jfile.write("\tif_icmpgt ");
 				jfile.write_relop_body(branch_cnt);
 				branch_cnt++;
 				return;
 			} if (op.val.equals(Operator.INT_EQ)) {
-				jfile.write("if_icmpeq ");
+				jfile.write("\tif_icmpeq ");
 				jfile.write_relop_body(branch_cnt);
 				branch_cnt++;
 				return;
 			} if (op.val.equals(Operator.INT_NE)) {
-				jfile.write("if_icmpne ");
+				jfile.write("\tif_icmpne ");
 				jfile.write_relop_body(branch_cnt);
 				branch_cnt++;
 				return;
-			} if (op.val.equals(Operator.INT_EQ))
-				return new BoolValue(v1.intValue() != v2.intValue());
-
+			} if (op.val.equals(Operator.INT_GE)) {
+				jfile.write("\tif_icmpge ");
+				jfile.write_relop_body(branch_cnt);
+				branch_cnt++;
+				return; 
+			} if (op.val.equals(Operator.INT_LE)) {
+				jfile.write("\tif_icmple ");
+				jfile.write_relop_body(branch_cnt++);
+				branch_cnt++;
+				return;
+			}
 				/*
 			if (op.val.equals(Operator.FLOAT_LT))
 				return new BoolValue(v1.floatValue() < v2.floatValue());
