@@ -53,3 +53,26 @@ Conceptual Details:
 Implementation details:
 -Stack counter which counts the number of elements the largest expression needs
 -	This will be stored in a global variable and will be written once all expressions are traversed.
+
+Troubles:
+-none of the comparison operators return an int alone, most of them seem to branch. 
+-creating modular labels procedurally is another issue.
+
+-labels (or subroutines) which push ints (in response to the first trouble) will have trouble returning to the place where the branch originated
+-lookupswitches (or perhaps comparisons) where unique labels are below (ie two labels for each comparison!)
+
+example
+int1  0
+int2  2
+if_icmpgt TRUE0
+
+TRUE0:
+bipush 1 
+goto COMPLETE0 
+
+FALSE0:
+bipush 0
+
+COMPLETE0: ;We know the result is on the stack
+
+The zeros here would be for this particular comparison, these numbers would have constantly be generated per comparison
