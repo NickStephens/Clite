@@ -70,9 +70,17 @@ public class JasminFile extends FileWriter {
 		write("\n");
 	}
 
-	public void writebranch(String to_write) throws IOException {
-		write(to_write);
-		write("\n");
+	public void write_relop_body(int branch_cnt) throws IOException {
+		write("TRUE" + branch_cnt);
+		writeln();
+		writeln("TRUE" + branch_cnt + ":");
+		writeln("\tbipush 1");
+		writeln("\tgoto COMPLETED" + branch_cnt);
+		writeln();
+		writeln("FALSE" + branch_cnt + ":");
+		writeln("\tbipush 0");
+		writeln();
+		writeln("COMPLETED" + branch_cnt + ":");
 	}
 
 	public void writeout( ) throws IOException {

@@ -6,6 +6,8 @@ import java.io.*;
 
 public class CodeGen {
 
+	private int branch_cnt = 0;
+
 	private class Pair {
 			
 			Type type;
@@ -109,12 +111,11 @@ public class CodeGen {
 
 		Type target_type = symtable.getType((Variable) a.target);
 		String store;
-		if (target_type.equals(Type.INT)) {
+		if (target_type.equals(Type.INT) || target_type.equals(Type.CHAR) || target_type.equals(Type.BOOL)) {
 			store = "istore";
 		} else if (target_type.equals(Type.FLOAT)) {
 			store = "fstore";
 		} else {
-		// if (target_type.equals(Type.CHAR))
 			throw new IllegalArgumentException("should never reach here");
 		}
 		
@@ -130,15 +131,16 @@ public class CodeGen {
     }
 
 	/*
-  
     void M (Conditional c, State state) {
 		// translate conditional
 		// 		translate the bodies of each conditional
+		//
         if (M(c.test, state).boolValue( ))
             return M (c.thenbranch, state);
         else
             return M (c.elsebranch, state);
     }
+
   
     State M (Loop l, State state) {
 		// translate the conditional
@@ -165,25 +167,39 @@ public class CodeGen {
             return; 
 		}
         // student exercise
-		/*
-	if (op.val.equals(Operator.INT_LT))
-	    return new BoolValue(v1.intValue() < v2.intValue());
-	if (op.val.equals(Operator.INT_GT))
-	    return new BoolValue(v1.intValue() > v2.intValue());
-	if (op.val.equals(Operator.INT_EQ))
-	    return new BoolValue(v1.intValue() == v2.intValue());
-	if (op.val.equals(Operator.INT_NE))
-	    return new BoolValue(v1.intValue() != v2.intValue());
+			if (op.val.equals(Operator.INT_LT)) {
+				jfile.write("if_icmplt ")
+				jfile.write_relop_body(branch_cnt);
+				branch_cnt++;
+				return;
+			} if (op.val.equals(Operator.INT_GT)) {
+				jfile.write("if_icmpgt ");
+				jfile.write_relop_body(branch_cnt);
+				branch_cnt++;
+				return;
+			} if (op.val.equals(Operator.INT_EQ)) {
+				jfile.write("if_icmpeq ");
+				jfile.write_relop_body(branch_cnt);
+				branch_cnt++;
+				return;
+			} if (op.val.equals(Operator.INT_NE)) {
+				jfile.write("if_icmpne ");
+				jfile.write_relop_body(branch_cnt);
+				branch_cnt++;
+				return;
+			} if (op.val.equals(Operator.INT_EQ))
+				return new BoolValue(v1.intValue() != v2.intValue());
 
-	if (op.val.equals(Operator.FLOAT_LT))
-	    return new BoolValue(v1.floatValue() < v2.floatValue());
-	if (op.val.equals(Operator.FLOAT_GT))
-	    return new BoolValue(v1.floatValue() > v2.floatValue());
-	if (op.val.equals(Operator.FLOAT_EQ))
-	    return new BoolValue(v1.floatValue() == v2.floatValue());
-	if (op.val.equals(Operator.FLOAT_NE))
-	    return new BoolValue(v1.floatValue() != v2.floatValue());
-		*/
+				/*
+			if (op.val.equals(Operator.FLOAT_LT))
+				return new BoolValue(v1.floatValue() < v2.floatValue());
+			if (op.val.equals(Operator.FLOAT_GT))
+				return new BoolValue(v1.floatValue() > v2.floatValue());
+			if (op.val.equals(Operator.FLOAT_EQ))
+				return new BoolValue(v1.floatValue() == v2.floatValue());
+			if (op.val.equals(Operator.FLOAT_NE))
+				return new BoolValue(v1.floatValue() != v2.floatValue());
+				*/
 
 		if (op.val.equals(Operator.FLOAT_PLUS)) { 
 			jfile.writeln("fadd");
@@ -242,7 +258,7 @@ public class CodeGen {
 				return;
 			} if (e instanceof CharValue) {
 				CharValue c = (CharValue) e;
-				jfile.writeln("ldc " + c.intValue());
+				jfile.writeln("ldc " + (int)c.charValue());
 				return;
 			}
 		} if (e instanceof Variable) { 
