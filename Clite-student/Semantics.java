@@ -194,9 +194,9 @@ public class Semantics {
             return new BoolValue(!v.boolValue( ));
         else if (op.val.equals(Operator.INT_NEG))
             return new IntValue(-v.intValue( ));
-        else if (op.val.equals(Operator.FLOAT_NEG))
+        else if (op.val.equals(Operator.FLOAT_NEG)) {
             return new FloatValue(-v.floatValue( ));
-        else if (op.val.equals(Operator.I2F)) 
+        } else if (op.val.equals(Operator.I2F)) 
             return new FloatValue((float)(v.intValue( ))); 
         else if (op.val.equals(Operator.F2I))
             return new IntValue((int)(v.floatValue( )));

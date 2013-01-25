@@ -567,7 +567,7 @@ class Operator {
     final static String INT_TIMES = "INT*";
     final static String INT_DIV = "INT/";
     // UnaryOp = !    
-    final static String INT_NEG = "-";
+    final static String INT_NEG = "INT-NEG";
     // RelationalOp = < | <= | == | != | >= | >
     final static String FLOAT_LT = "FLOAT<";
     final static String FLOAT_LE = "FLOAT<=";
@@ -581,7 +581,7 @@ class Operator {
     final static String FLOAT_TIMES = "FLOAT*";
     final static String FLOAT_DIV = "FLOAT/";
     // UnaryOp = !    
-    final static String FLOAT_NEG = "-";
+    final static String FLOAT_NEG = "FLOAT-NEG";
     // RelationalOp = < | <= | == | != | >= | >
     final static String CHAR_LT = "CHAR<";
     final static String CHAR_LE = "CHAR<=";
