@@ -59,7 +59,10 @@ public class StackFrame { // Activation Record
 	}
 
 	public Value get(VariableRef var) {
-		return frame_state.get(var);
+		if (frame_state.containsKey(var))
+			return frame_state.get(var);
+		else
+			return slink.get(var);
 	}
 
 	/* sets the var to the val, if not found in current stack frame

@@ -108,9 +108,13 @@ public class Semantics {
 		Value val = M(expr, state);
 		args.add(val);
 	}
+	System.out.println("[ACT ARGS]: " + c.args.toString());
 
     	// push c's stackframe onto stack
 	state.push(new StackFrame(c.name, state));
+
+	state.debug();
+	System.out.println("[ARG VALS]: " + args.toString());
 
 	// assign the arguments to the values of the parameters on c's stackframe
 	byValue(state.get_params(), args, state);
