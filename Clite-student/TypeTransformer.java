@@ -76,9 +76,9 @@ public class TypeTransformer {
 			Type param_type = (Type) current_param.getValue();
 			Expression current_arg = c.args.get(i);
 			if (param_type == Type.FLOAT && StaticTypeCheck.typeOf(current_arg, tm) == Type.INT) {
-				t_args.add(new Unary(new Operator(Operator.I2F), current_arg));	
+				t_args.add(new Unary(new Operator(Operator.I2F), T(current_arg, tm)));	
 			} else {
-				t_args.add(current_arg);
+				t_args.add(T(current_arg, tm));
 			}
 		}
 		return new CallExpression(c.name, t_args);
@@ -155,9 +155,9 @@ public class TypeTransformer {
 			Type param_type = (Type) current_param.getValue();
 			Expression current_arg = c.args.get(i);
 			if (param_type == Type.FLOAT && StaticTypeCheck.typeOf(current_arg, tm) == Type.INT) {
-				t_args.add(new Unary(new Operator(Operator.I2F), current_arg));	
+				t_args.add(new Unary(new Operator(Operator.I2F), T(current_arg, tm)));	
 			} else {
-				t_args.add(current_arg);
+				t_args.add(T(current_arg, tm));
 			}
 		}
 		return new CallStatement(c.name, t_args);
