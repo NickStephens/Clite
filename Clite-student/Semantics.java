@@ -268,7 +268,7 @@ public class Semantics {
         System.out.println("Type map:");
         TypeMap map = StaticTypeCheck.typing(prog.globals, prog.functions);
         map.display();    // student exercise
-        StaticTypeCheck.V(prog);
+        // StaticTypeCheck.V(prog);
         Program out = TypeTransformer.T(prog, map);
         System.out.println("Output AST");
         out.display();    // student exercise
