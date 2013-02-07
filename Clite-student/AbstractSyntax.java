@@ -224,6 +224,10 @@ class Type {
 abstract class Statement {
     // Statement = Skip | Block | Assignment | Conditional | Loop | Call | Return
 
+	boolean hasReturn() {
+		return false;
+	}
+
 }
 
 class Skip extends Statement {
@@ -233,6 +237,15 @@ class Block extends Statement {
     // Block = Statement*
     //         (a Vector of members)
     public ArrayList<Statement> members = new ArrayList<Statement>();
+
+	boolean hasReturn() {
+		for (Statement s : members) {
+			boolean saw_ret = s.hasReturn();
+			if (saw_ret)
+				return true;
+		}
+		return false;
+	}
 }
 
 class Assignment extends Statement {
@@ -259,6 +272,10 @@ class Conditional extends Statement {
     Conditional (Expression t, Statement tp, Statement ep) {
         test = t; thenbranch = tp; elsebranch = ep;
     }
+
+	boolean hasReturn() {
+		return (thenbranch.hasReturn() || elsebranch.hasReturn());
+	}
     
 }
 
@@ -270,6 +287,10 @@ class Loop extends Statement {
     Loop (Expression t, Statement b) {
         test = t; body = b;
     }
+
+	boolean hasReturn() {
+		return body.hasReturn();
+	}	
     
 }
 
@@ -288,6 +309,10 @@ class Return extends Statement {
 
 	Return (VariableRef target, Expression result) {
 		this.target = target; this.result = result;
+	}
+
+	boolean hasReturn() {
+		return true;
 	}
 }
 	

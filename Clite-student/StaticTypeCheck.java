@@ -114,13 +114,16 @@ public class StaticTypeCheck {
 	if (! f.t.equals(Type.VOID) && !f.id.equals("main")) {
 		// Find the return statements
 		boolean contains_ret = false; //sorry Sherri
-		for (Statement s : f.body.members) {
+		for (Statement s : f.body.members) { // This doesn't cut it, because return statements can be nested inside other Abstract Syntax structures
+			contains_ret = s.hasReturn();
+			/*
 			if (s.getClass().equals(Return.class)) {
 				Return r = (Return) s;
 				check( typeOf(r.result, tm).equals(f.t),
 					"retun statement in function " + f.id + " with incorrect type " + typeOf(r.result, tm));
 				contains_ret = true;	
 			}
+			*/
 		}
 		if (!contains_ret)
 			check( false, "non-void function " + f.id + " does not contain return statement");	
