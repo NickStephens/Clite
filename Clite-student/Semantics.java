@@ -32,19 +32,6 @@ public class Semantics {
 
 	return state;
 			
-	/*
-        State state = new State();
-        Value intUndef = new IntValue();
-        for (Declaration decl : d)
-	    if (decl instanceof ArrayDecl) {
-	    	ArrayDecl adecl = (ArrayDecl) decl;
-	    	for (int i=0; i<(adecl.size.intValue());i++)
-			state.put(new ArrayRef(adecl.v.toString(), new IntValue(i)), Value.mkValue(adecl.t));
-		}
-	    else 
-            	state.put(decl.v, Value.mkValue(decl.t));
-        return state;
-    	*/
     }
 
     State byValue (Declarations params, ArrayList<Value> args, State state) {
@@ -89,10 +76,12 @@ public class Semantics {
     }
   
     State M (Conditional c, State state) {
-        if (M(c.test, state).boolValue( ))
+        if (M(c.test, state).boolValue( )) {
+			System.out.println("Entered thenbranch");
             return M (c.thenbranch, state);
-        else
+		} else {
             return M (c.elsebranch, state);
+		}
     }
   
     State M (Loop l, State state) {
@@ -108,13 +97,11 @@ public class Semantics {
 		Value val = M(expr, state);
 		args.add(val);
 	}
-	System.out.println("[ACT ARGS]: " + c.args.toString());
 
     	// push c's stackframe onto stack
 	state.push(new StackFrame(c.name, state));
 
-	state.debug();
-	System.out.println("[ARG VALS]: " + args.toString());
+	System.out.println("[DEBUG] CallStatement");
 
 	// assign the arguments to the values of the parameters on c's stackframe
 	byValue(state.get_params(), args, state);
@@ -244,13 +231,24 @@ public class Semantics {
 		// push c's stackframe onto stack
 		state.push(new StackFrame(c.name, state));
 
+		System.out.println("[DEBUG] Before by-value");
+		state.debug("\t");
+		System.out.println("[DEBUG] CLOSE");
+
 		// assign the arguments to the values of the parameters on c's stackframe
 		byValue(state.get_params(), args, state);
 
+		System.out.println("[DEBUG] After by-value");	
+		state.debug("\t");
+
 		// interpret called funcs body
 		M (state.get_instrs(), state);
+		System.out.println("[DEBUG] After instrs are interpreted");
+		state.debug("\t");
 	
 		Value ret = state.get(new Variable("$ret"));
+		System.out.println("ret: " + ret);
+		System.out.println("[DEBUG] CLOSE");
 
 		// pop called func's stackframe
 		state.pop();

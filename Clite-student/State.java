@@ -97,11 +97,11 @@ public class State {
 	}
 
 	/* prints useful debug information */
-	public void debug( ) {
-		System.out.println("[DEBUG] Functions: (not yet implemented in display()) \n");
-		System.out.println("[DEBUG] Globals: ");
+	public void debug(String tabs) {
+		System.out.println(tabs + "[DEBUG] Functions: (not yet implemented in display()) \n");
+		System.out.println(tabs + "[DEBUG] Globals: ");
 		data.debug();
-		System.out.println("[DEBUG] Stack: ");
+		System.out.println(tabs + "[DEBUG] Stack: ");
 		stack.debug();
 	}
 }
