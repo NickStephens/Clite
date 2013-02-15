@@ -6,7 +6,7 @@ import java.util.*;
 
 public class Semantics {
 
-    private boolean saw_ret = false; // a global flag which causes return statements to stop execution of a block
+    //private boolean saw_ret = false; // a global flag which causes return statements to stop execution of a block
 
     State M (Program p) { 
 	// The meaning of a program is the meaning of main with both the globals and main's StackFrames on the state's stack.
@@ -68,8 +68,8 @@ public class Semantics {
   
     State M (Block b, State state) {
         for (Statement s : b.members) {
-	    if (saw_ret) // if the last statement contained a return
-	    	return state;
+	    //if (saw_ret) // if the last statement contained a return
+	    	//return state;
             state = M (s, state);
 	}
         return state;
@@ -78,14 +78,14 @@ public class Semantics {
     State M (Conditional c, State state) {
         if (M(c.test, state).boolValue( )) {
 			System.out.println("Entered thenbranch");
-            return M (c.thenbranch, state);
+            		return M (c.thenbranch, state);
 		} else {
-            return M (c.elsebranch, state);
+            		return M (c.elsebranch, state);
 		}
     }
   
     State M (Loop l, State state) {
-        if (M (l.test, state).boolValue( ) && !saw_ret)
+        if (M (l.test, state).boolValue( ) )//&& !saw_ret)
             return M(l, M (l.body, state));
         else return state;
     }
@@ -113,14 +113,15 @@ public class Semantics {
 	state.pop();
 
 	// reset saw_ret to catch next function call's return
-	saw_ret = false;
+	//saw_ret = false;
 
 	return state;
     }
 
     State M (Return r, State state) {
-	saw_ret = true;
-    	return state.set(r.target, M(r.result, state));
+	//saw_ret = true;
+	System.out.println("Setting $ret");
+	return state.set(r.target, M(r.result, state));
     }
 
     Value applyBinary (Operator op, Value v1, Value v2) {
@@ -135,11 +136,13 @@ public class Semantics {
         if (op.val.equals(Operator.INT_DIV)) 
             return new IntValue(v1.intValue( ) / v2.intValue( ));
         // student exercise
-	if (op.val.equals(Operator.INT_LT))
+	if (op.val.equals(Operator.INT_LT)) {
+	    System.out.println("applying lt");
 	    return new BoolValue(v1.intValue() < v2.intValue());
-	if (op.val.equals(Operator.INT_GT))
+	} if (op.val.equals(Operator.INT_GT)) {
+	    System.out.println("applying gt");
 	    return new BoolValue(v1.intValue() > v2.intValue());
-	if (op.val.equals(Operator.INT_EQ))
+	} if (op.val.equals(Operator.INT_EQ))
 	    return new BoolValue(v1.intValue() == v2.intValue());
 	if (op.val.equals(Operator.INT_NE))
 	    return new BoolValue(v1.intValue() != v2.intValue());

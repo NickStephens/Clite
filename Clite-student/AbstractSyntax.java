@@ -63,8 +63,8 @@ class Program {
 		Conditional con_node = (Conditional) node;
 		String prefix = spcing + "Conditional:\n";
 		String test = inner_display(spc, spc + spcing, con_node.test);
-		String then_branch = inner_display(spc, spc + spcing, con_node.thenbranch);
-		String else_branch = inner_display(spc, spc + spcing, con_node.elsebranch);
+		String then_branch = spcing + "then:\n" + inner_display(spc, spc + spcing, con_node.thenbranch);
+		String else_branch = spcing +  "else:\n " + inner_display(spc, spc + spcing, con_node.elsebranch);
 		return prefix + test + then_branch + else_branch;
 	} if (node instanceof Loop) {
 		Loop l_node = (Loop) node;
@@ -246,6 +246,14 @@ class Block extends Statement {
 		}
 		return false;
 	}
+
+	/*
+	public void display() {
+		for (Statement s : members) {
+			s.display();
+		}
+	}
+	*/
 }
 
 class Assignment extends Statement {
@@ -276,7 +284,15 @@ class Conditional extends Statement {
 	boolean hasReturn() {
 		return (thenbranch.hasReturn() || elsebranch.hasReturn());
 	}
-    
+
+	/*
+	public void display() {
+		System.out.println("Conditional: ");
+		System.out.print("\t"); test.display();
+		System.out.println("\t"); thenbranch.display();	
+		System.out.println("\t"); elsebranch.display();
+   	} 
+	*/
 }
 
 class Loop extends Statement {
@@ -518,7 +534,7 @@ class Binary extends Expression {
     Binary (Operator o, Expression l, Expression r) {
         op = o; term1 = l; term2 = r;
     } // binary
-
+	
 }
 
 class Unary extends Expression {
