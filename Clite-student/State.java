@@ -1,9 +1,9 @@
 public class State {
 	
-	private Functions text;
-	private Function current_func;
-	private Stack stack;
-	private StackFrame data;
+	private Functions text; // represents all the different functions uniquely
+	private Function current_func; // represents the function at the top of the stack
+	private Stack stack; // represents the entire stack
+	private StackFrame data; // the current stack frame at the top of the stack
 	// heap
 	// bbs
 

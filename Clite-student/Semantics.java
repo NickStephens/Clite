@@ -6,7 +6,7 @@ import java.util.*;
 
 public class Semantics {
 
-    //private boolean saw_ret = false; // a global flag which causes return statements to stop execution of a block
+    private boolean saw_ret = false; // a global flag which causes return statements to stop execution of a block
 
     State M (Program p) { 
 	// The meaning of a program is the meaning of main with both the globals and main's StackFrames on the state's stack.
@@ -68,8 +68,8 @@ public class Semantics {
   
     State M (Block b, State state) {
         for (Statement s : b.members) {
-	    //if (saw_ret) // if the last statement contained a return
-	    	//return state;
+	    if (saw_ret) // if the last statement contained a return
+	    	return state;
             state = M (s, state);
 	}
         return state;
@@ -85,7 +85,7 @@ public class Semantics {
     }
   
     State M (Loop l, State state) {
-        if (M (l.test, state).boolValue( ) )//&& !saw_ret)
+        if (M (l.test, state).boolValue( ) && !saw_ret)
             return M(l, M (l.body, state));
         else return state;
     }
@@ -113,15 +113,15 @@ public class Semantics {
 	state.pop();
 
 	// reset saw_ret to catch next function call's return
-	//saw_ret = false;
+	saw_ret = false;
 
 	return state;
     }
 
     State M (Return r, State state) {
-	//saw_ret = true;
-	System.out.println("Setting $ret");
-	return state.set(r.target, M(r.result, state));
+	state.set(r.target, M(r.result, state));
+	saw_ret = true;
+	return state;
     }
 
     Value applyBinary (Operator op, Value v1, Value v2) {
@@ -233,6 +233,8 @@ public class Semantics {
 
 		// push c's stackframe onto stack
 		state.push(new StackFrame(c.name, state));
+		boolean temp_saw_ret = saw_ret;
+		saw_ret = false;
 
 		System.out.println("[DEBUG] Before by-value");
 		state.debug("\t");
@@ -246,6 +248,8 @@ public class Semantics {
 
 		// interpret called funcs body
 		M (state.get_instrs(), state);
+		saw_ret = temp_saw_ret;
+
 		System.out.println("[DEBUG] After instrs are interpreted");
 		state.debug("\t");
 	
