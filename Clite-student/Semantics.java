@@ -77,7 +77,6 @@ public class Semantics {
   
     State M (Conditional c, State state) {
         if (M(c.test, state).boolValue( )) {
-			System.out.println("Entered thenbranch");
             		return M (c.thenbranch, state);
 		} else {
             		return M (c.elsebranch, state);
@@ -100,8 +99,6 @@ public class Semantics {
 
     	// push c's stackframe onto stack
 	state.push(new StackFrame(c.name, state));
-
-	System.out.println("[DEBUG] CallStatement");
 
 	// assign the arguments to the values of the parameters on c's stackframe
 	byValue(state.get_params(), args, state);
@@ -137,10 +134,8 @@ public class Semantics {
             return new IntValue(v1.intValue( ) / v2.intValue( ));
         // student exercise
 	if (op.val.equals(Operator.INT_LT)) {
-	    System.out.println("applying lt");
 	    return new BoolValue(v1.intValue() < v2.intValue());
 	} if (op.val.equals(Operator.INT_GT)) {
-	    System.out.println("applying gt");
 	    return new BoolValue(v1.intValue() > v2.intValue());
 	} if (op.val.equals(Operator.INT_EQ))
 	    return new BoolValue(v1.intValue() == v2.intValue());
@@ -236,26 +231,14 @@ public class Semantics {
 		boolean temp_saw_ret = saw_ret;
 		saw_ret = false;
 
-		System.out.println("[DEBUG] Before by-value");
-		state.debug("\t");
-		System.out.println("[DEBUG] CLOSE");
-
 		// assign the arguments to the values of the parameters on c's stackframe
 		byValue(state.get_params(), args, state);
-
-		System.out.println("[DEBUG] After by-value");	
-		state.debug("\t");
 
 		// interpret called funcs body
 		M (state.get_instrs(), state);
 		saw_ret = temp_saw_ret;
 
-		System.out.println("[DEBUG] After instrs are interpreted");
-		state.debug("\t");
-	
 		Value ret = state.get(new Variable("$ret"));
-		System.out.println("ret: " + ret);
-		System.out.println("[DEBUG] CLOSE");
 
 		// pop called func's stackframe
 		state.pop();
