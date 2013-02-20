@@ -79,7 +79,7 @@ public class Parser {
     	// Parameters --> [ Parameter { , Parameter } ]
     	Declarations params = new Declarations();
 	do {
-		token = lexer.next();
+		token = lexer.next(); // initially skips over the left paren
 		parameter(params);
 	} while (token.type().equals(TokenType.Comma));
 	return params;
@@ -87,15 +87,19 @@ public class Parser {
     	
     private void parameter(Declarations dec) {
     	// Parameter --> Type Identifier [ [] ] 
-    	Type t = type(); 
-	token = lexer.next();
-	String id = match(TokenType.Identifier);
-	if (token.type().equals(TokenType.LeftBracket)) {
-		match(token.type());
-		match(TokenType.RightBracket);
-		dec.add(new ArrayDecl(new Variable(id), t, (IntValue) Value.mkValue(Type.INT)));
-	} else 
-		dec.add(new VariableDecl(new Variable(id), t));
+	if (token.type().equals(TokenType.RightParen)) {
+		return;
+	} else {
+		Type t = type();  // this is throwing an error. and accidentally requires all functions to have formal parameters
+		token = lexer.next();
+		String id = match(TokenType.Identifier);
+		if (token.type().equals(TokenType.LeftBracket)) {
+			match(token.type());
+			match(TokenType.RightBracket);
+			dec.add(new ArrayDecl(new Variable(id), t, (IntValue) Value.mkValue(Type.INT)));
+		} else 
+			dec.add(new VariableDecl(new Variable(id), t));
+	}
     }
 
 	
@@ -224,7 +228,9 @@ public class Parser {
 	Expressions args = new Expressions();
 	do {
 		token = lexer.next();
-		args.add(expression());
+		if (! token.type().equals(TokenType.RightParen)) {
+			args.add(expression());
+		}
 	} while (token.type().equals(TokenType.Comma));
 	match(TokenType.RightParen);
   	return new CallStatement(id, args); 
@@ -394,7 +400,9 @@ public class Parser {
 	Expressions args = new Expressions();
 	do {
 		token = lexer.next();
-		args.add(expression());
+		if (! token.type().equals(TokenType.RightParen)) {
+			args.add(expression());
+		}
 	} while (token.type().equals(TokenType.Comma));
 	match(TokenType.RightParen);
 	return new CallExpression(id, args);
