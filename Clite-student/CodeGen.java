@@ -23,6 +23,8 @@ public class CodeGen {
 
 	}
 	
+	// The symbol table class allows us to map Clite Identifiers
+	// to Jasmin numeric storage
 	private class SymbolTable extends HashMap<Variable, Pair> { 
 
 		Type getType (Variable v) {
@@ -54,19 +56,22 @@ public class CodeGen {
 		// Intiliaze file to write to here.
 		// Call the M (p.body, initialState(p.decpart));
 
+		// truncating .cpp
 		String jfile = filename.substring(0,filename.length()-4);
 
 		JasminFile assem_out = new JasminFile(jfile + ".j");
 
 		assem_out.JVMBoiler();
 
-		// allocate write the function type signature, then allocates stack and local space
+		// preamble writes the function type signature, then allocates stack and local space
 		assem_out.preamble(p.decpart);
 
-		// text goes through the body and writes the instructions
-		// write loosely corresponds to M
+		// The new M function takes the file to write to
+		// it goes through the body and writes the instructions
 		M(p.body, symtable, assem_out);
 
+		// writeout writes the stuff for ending the main method and
+		// closes the file
 		assem_out.writeout();
     }
   
@@ -105,7 +110,6 @@ public class CodeGen {
   
     void M (Assignment a, SymbolTable symtable, JasminFile jfile) throws IOException {
 		// write the meaning of the source expression
-
 		M(a.source, symtable, jfile); // this should write the expression 
 									  // onto the stack
 
@@ -209,10 +213,10 @@ public class CodeGen {
 				return new BoolValue(v1.floatValue() != v2.floatValue());
 				*/
 
-		if (op.val.equals(Operator.FLOAT_PLUS)) { 
+	if (op.val.equals(Operator.FLOAT_PLUS)) { 
 			jfile.writeln("fadd");
             return;
-		} if (op.val.equals(Operator.FLOAT_MINUS)) {
+	} if (op.val.equals(Operator.FLOAT_MINUS)) {
 			jfile.writeln("fsub");
             return; 
         } if (op.val.equals(Operator.FLOAT_TIMES)) {
@@ -314,6 +318,8 @@ public class CodeGen {
         out.display();    // student exercise
         CodeGen codegen = new CodeGen( );
 		System.out.println("\nReducing into Jasmin Instructions...");
+
+		// Stupid shit for running a command through Java
 		codegen.M(out, args[0]);
 
 		System.out.println();
