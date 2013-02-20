@@ -134,18 +134,47 @@ public class CodeGen {
         return;
     }
 
-	/*
-    void M (Conditional c, State state) {
+    void M (Conditional c, SymbolTable symtable, JasminFile jfile) throws IOException {
 		// translate conditional
 		// 		translate the bodies of each conditional
 		//
+	
+		// the conditional will result in either 1 (true) or 0 (false)
+		// being pushed to the stack
+	int current_branch_cnt = branch_cnt;
+	branch_cnt++;
+
+	M(c.test, symtable, jfile);
+	// We can expect a 0 or 1 to be here
+	jfile.writeln("ifne TRUE" + current_branch_cnt);
+
+	jfile.writeln("goto FALSE" + current_branch_cnt);
+
+	jfile.writeln();
+
+	jfile.writeln("TRUE" + current_branch_cnt + ":");
+	M(c.thenbranch, symtable, jfile);	
+	jfile.writeln("goto COMPLETE" + current_branch_cnt);
+	
+	jfile.writeln();
+
+	jfile.writeln("FALSE" + current_branch_cnt + ":");
+	M(c.elsebranch, symtable, jfile);
+
+	jfile.writeln();
+	
+	jfile.writeln("COMPLETE" + current_branch_cnt + ":");
+	
+
+	/* from the days where Clite was just an interpreter
         if (M(c.test, state).boolValue( ))
             return M (c.thenbranch, state);
         else
             return M (c.elsebranch, state);
+	*/
     }
-
   
+	/*
     State M (Loop l, State state) {
 		// translate the conditional
 		//		translate the body
@@ -153,8 +182,9 @@ public class CodeGen {
             return M(l, M (l.body, state));
         else return state;
     }
-
 	*/
+
+	
 
     void applyBinary (Operator op, JasminFile jfile) throws IOException {
         if (op.val.equals(Operator.INT_PLUS)) {
@@ -277,7 +307,8 @@ public class CodeGen {
 			Variable v = (Variable) e;
 			Type v_type = symtable.getType(v);
 			String load = "null";
-			if (v_type.equals(Type.INT)) {
+			if (v_type.equals(Type.INT) || v_type.equals(Type.CHAR)
+				|| v_type.equals(Type.BOOL)) {
 				load = "iload";
 			} else if (v_type.equals(Type.FLOAT)) {
 				load = "fload";
