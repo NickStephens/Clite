@@ -76,3 +76,9 @@ bipush 0
 COMPLETE0: ;We know the result is on the stack
 
 The zeros here would be for this particular comparison, these numbers would have constantly be generated per comparison
+
+Feb 20, 2013
+Loops and conditonals are now compiling. I'm going to now include a print statement.
+This new statement should exist in a seperate module file, to help git merge both 
+the CliteF and CodeGen branches. In the AbstractSyntax print will inherent from 
+Statement and will contain an expression, which it will evaluate and print.
