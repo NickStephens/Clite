@@ -218,47 +218,68 @@ public class CodeGen {
             return; 
 		}
         // student exercise
-			if (op.val.equals(Operator.INT_LT)) {
-				jfile.write("\tif_icmplt ");
-				jfile.write_relop_body(branch_cnt);
-				branch_cnt++;
-				return;
-			} if (op.val.equals(Operator.INT_GT)) {
-				jfile.write("\tif_icmpgt ");
-				jfile.write_relop_body(branch_cnt);
-				branch_cnt++;
-				return;
-			} if (op.val.equals(Operator.INT_EQ)) {
-				jfile.write("\tif_icmpeq ");
-				jfile.write_relop_body(branch_cnt);
-				branch_cnt++;
-				return;
-			} if (op.val.equals(Operator.INT_NE)) {
-				jfile.write("\tif_icmpne ");
-				jfile.write_relop_body(branch_cnt);
-				branch_cnt++;
-				return;
-			} if (op.val.equals(Operator.INT_GE)) {
-				jfile.write("\tif_icmpge ");
-				jfile.write_relop_body(branch_cnt);
-				branch_cnt++;
-				return; 
-			} if (op.val.equals(Operator.INT_LE)) {
-				jfile.write("\tif_icmple ");
-				jfile.write_relop_body(branch_cnt++);
-				branch_cnt++;
-				return;
-			}
-				/*
-			if (op.val.equals(Operator.FLOAT_LT))
-				return new BoolValue(v1.floatValue() < v2.floatValue());
-			if (op.val.equals(Operator.FLOAT_GT))
-				return new BoolValue(v1.floatValue() > v2.floatValue());
-			if (op.val.equals(Operator.FLOAT_EQ))
-				return new BoolValue(v1.floatValue() == v2.floatValue());
-			if (op.val.equals(Operator.FLOAT_NE))
-				return new BoolValue(v1.floatValue() != v2.floatValue());
-				*/
+	if (op.val.equals(Operator.INT_LT)) {
+		jfile.write("\tif_icmplt ");
+		jfile.write_relop_body(branch_cnt);
+		branch_cnt++;
+		return;
+	} if (op.val.equals(Operator.INT_GT)) {
+		jfile.write("\tif_icmpgt ");
+		jfile.write_relop_body(branch_cnt);
+		branch_cnt++;
+		return;
+	} if (op.val.equals(Operator.INT_EQ)) {
+		jfile.write("\tif_icmpeq ");
+		jfile.write_relop_body(branch_cnt);
+		branch_cnt++;
+		return;
+	} if (op.val.equals(Operator.INT_NE)) {
+		jfile.write("\tif_icmpne ");
+		jfile.write_relop_body(branch_cnt);
+		branch_cnt++;
+		return;
+	} if (op.val.equals(Operator.INT_GE)) {
+		jfile.write("\tif_icmpge ");
+		jfile.write_relop_body(branch_cnt);
+		branch_cnt++;
+		return; 
+	} if (op.val.equals(Operator.INT_LE)) {
+		jfile.write("\tif_icmple ");
+		jfile.write_relop_body(branch_cnt++);
+		branch_cnt++;
+		return;
+	}
+	if (op.val.equals(Operator.FLOAT_LT)) {
+		jfile.write("\tif_fcmplt ");
+		jfile.write_relop_body(branch_cnt);
+		branch_cnt++;
+		return;
+	} if (op.val.equals(Operator.FLOAT_GT)) {
+		jfile.write("\tif_fcmpgt ");
+		jfile.write_relop_body(branch_cnt);
+		branch_cnt++;
+		return;
+	} if (op.val.equals(Operator.FLOAT_EQ)) {
+		jfile.write("\tif_fcmpeq ");
+		jfile.write_relop_body(branch_cnt);
+		branch_cnt++;
+		return;
+	} if (op.val.equals(Operator.FLOAT_NE)) {
+		jfile.write("\tif_fcmpne ");
+		jfile.write_relop_body(branch_cnt);
+		branch_cnt++;
+		return;
+	} if (op.val.equals(Operator.FLOAT_GE)) {
+		jfile.write("\tif_fcmpge ");
+		jfile.write_relop_body(branch_cnt);
+		branch_cnt++;
+		return; 
+	} if (op.val.equals(Operator.FLOAT_LE)) {
+		jfile.write("\tif_fcmple ");
+		jfile.write_relop_body(branch_cnt++);
+		branch_cnt++;
+		return;
+	}
 
 	if (op.val.equals(Operator.FLOAT_PLUS)) { 
 			jfile.writeln("fadd");
@@ -363,7 +384,7 @@ public class CodeGen {
         StaticTypeCheck.V(prog);
         Program out = TypeTransformer.T(prog, map);
         System.out.println("Output AST");
-        out.display();    // student exercise
+        //out.display();    // student exercise
         CodeGen codegen = new CodeGen( );
 		System.out.println("\nReducing into Jasmin Instructions...");
 

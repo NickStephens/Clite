@@ -68,9 +68,14 @@ class Program {
 		String body = inner_display(spc, spc + spcing, l_node.body); 	
 		return prefix + test + body;
 	} else {
+		try {
 		String prefix = spcing + (node.getClass() + "").substring(6) + ": ";
 		String value = node + "\n"; 
 		return prefix + value; 
+		}
+		catch (Exception e) {
+		return spcing + "problem" + "\n";
+		}
 	}
     }
 }
@@ -514,6 +519,7 @@ class Operator {
     final static String boolMap[ ] [ ] = {
         {EQ, BOOL_EQ}, {NE, BOOL_NE}, {LT, BOOL_LT},
         {LE, BOOL_LE}, {GT, BOOL_GT}, {GE, BOOL_GE},
+	{OR, OR}, {AND, AND}, {NOT, NOT}
     };
 
     final static private Operator map (String[][] tmap, String op) {
