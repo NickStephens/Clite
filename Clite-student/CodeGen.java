@@ -249,39 +249,92 @@ public class CodeGen {
 		branch_cnt++;
 		return;
 	}
+	// inconsistencies among float and int operations
+
+	/* fcmp? guide
+	> x
+	> y
+	> fcmpl
+	-- 1 iff y < x
+	-- 0 iff y == 0
+	-- -1 iff y > x
+
+	> x
+	> y
+	> fcmpg
+	-- 1 iff y > x
+	-- 0 iff y == 0
+	-- -1 iff y < x
+	*/
+
+
 	if (op.val.equals(Operator.FLOAT_LT)) {
-		jfile.write("\tif_fcmplt ");
+		jfile.writeln("fcmpl");
+		// 1 if its true
+		// -1 if its false
+		// 0 it its false
+
+		jfile.writeln("bipush 0");
+		jfile.write("\tif_icmplt ");
 		jfile.write_relop_body(branch_cnt);
 		branch_cnt++;
 		return;
-	} if (op.val.equals(Operator.FLOAT_GT)) {
-		jfile.write("\tif_fcmpgt ");
+	} if (op.val.equals(Operator.FLOAT_GT))  {
+		jfile.writeln("fcmpg");
+		// 1 if its true
+		// -1 if its false
+		// 0 it its false
+
+		jfile.writeln("bipush 0");
+		jfile.write("\tif_icmplt ");
 		jfile.write_relop_body(branch_cnt);
 		branch_cnt++;
 		return;
 	} if (op.val.equals(Operator.FLOAT_EQ)) {
-		jfile.write("\tif_fcmpeq ");
+		jfile.writeln("fcmpg");
+		// 1 if its true
+		// -1 if its false
+		// 0 it its false
+
+		jfile.writeln("bipush 0");
+		jfile.write("\tif_icmpeq ");
 		jfile.write_relop_body(branch_cnt);
 		branch_cnt++;
 		return;
 	} if (op.val.equals(Operator.FLOAT_NE)) {
-		jfile.write("\tif_fcmpne ");
+		jfile.writeln("fcmpg");
+		// 1 if its true
+		// -1 if its false
+		// 0 it its false
+
+		jfile.writeln("bipush 0");
+		jfile.write("\tif_icmpne ");
 		jfile.write_relop_body(branch_cnt);
 		branch_cnt++;
 		return;
 	} if (op.val.equals(Operator.FLOAT_GE)) {
-		jfile.write("\tif_fcmpge ");
+		jfile.writeln("fcmpg");
+		// 1 if its true
+		// -1 if its false
+		// 0 it its false
+
+		jfile.writeln("bipush 0");
+		jfile.write("\tif_icmpge ");
 		jfile.write_relop_body(branch_cnt);
 		branch_cnt++;
-		return; 
+		return;
 	} if (op.val.equals(Operator.FLOAT_LE)) {
-		jfile.write("\tif_fcmple ");
-		jfile.write_relop_body(branch_cnt++);
+		jfile.writeln("fcmpg");
+		// 1 if its true
+		// -1 if its false
+		// 0 it its false
+
+		jfile.writeln("bipush 0");
+		jfile.write("\tif_icmple ");
+		jfile.write_relop_body(branch_cnt);
 		branch_cnt++;
 		return;
-	}
-
-	if (op.val.equals(Operator.FLOAT_PLUS)) { 
+	} if (op.val.equals(Operator.FLOAT_PLUS)) { 
 			jfile.writeln("fadd");
             return;
 	} if (op.val.equals(Operator.FLOAT_MINUS)) {
@@ -294,6 +347,28 @@ public class CodeGen {
 			jfile.writeln("fdiv");
             return; 
 		}
+	// these are some boolean operators which Jasmin has no intructions for
+	// It turns out it's simply more efficient to operate on 32bit ints!
+	// guess it makes sense that its too big of a hassle address a single bit
+
+	// These also rely on the fact that we're on storing booleans as:
+	// True = the Int 1
+	// False = the Int 0
+	// As Sherri says, the only meaning we're ever ascribing to these
+	// types of things lies in the encoding
+
+	//at this point two ints should be on the stack which are either 1 or 0
+	if (op.val.equals(Operator.OR)) {
+		jfile.writeln("ior"); 
+		return;
+	} if (op.val.equals(Operator.AND)) {
+		jfile.writeln("iand");
+		return;
+	} if (op.val.equals(Operator.NOT)) {
+	//	jfile.writeln("negate");
+		return;
+	}
+			
         throw new IllegalArgumentException("should never reach here");
 	
     } 

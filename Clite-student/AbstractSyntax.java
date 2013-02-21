@@ -68,14 +68,9 @@ class Program {
 		String body = inner_display(spc, spc + spcing, l_node.body); 	
 		return prefix + test + body;
 	} else {
-		try {
 		String prefix = spcing + (node.getClass() + "").substring(6) + ": ";
 		String value = node + "\n"; 
 		return prefix + value; 
-		}
-		catch (Exception e) {
-		return spcing + "problem" + "\n";
-		}
 	}
     }
 }
