@@ -173,18 +173,35 @@ public class CodeGen {
             return M (c.elsebranch, state);
 	*/
     }
-  
-	/*
-    State M (Loop l, State state) {
+   
+    void M (Loop l, SymbolTable symtable, JasminFile jfile) throws IOException {
 		// translate the conditional
 		//		translate the body
+
+	int current_branch_cnt = branch_cnt;
+	branch_cnt++;
+
+	jfile.writeln();
+
+	jfile.writeln("LOOPTEST" + current_branch_cnt + ":");
+	M(l.test, symtable, jfile);
+	
+	jfile.writeln();
+	jfile.writeln("ifne LOOPBODY" + current_branch_cnt);
+	jfile.writeln("goto LOOPEXIT" + current_branch_cnt); 
+
+	jfile.writeln("LOOPBODY" + current_branch_cnt + ":");
+	M(l.body, symtable, jfile);
+	jfile.writeln("goto LOOPTEST" + current_branch_cnt);
+
+	jfile.writeln("LOOPEXIT" + current_branch_cnt + ":");
+	
+	/*
         if (M (l.test, state).boolValue( ))
             return M(l, M (l.body, state));
         else return state;
-    }
 	*/
-
-	
+    }
 
     void applyBinary (Operator op, JasminFile jfile) throws IOException {
         if (op.val.equals(Operator.INT_PLUS)) {
