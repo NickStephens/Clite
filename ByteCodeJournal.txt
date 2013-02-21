@@ -82,3 +82,5 @@ Loops and conditonals are now compiling. I'm going to now include a print statem
 This new statement should exist in a seperate module file, to help git merge both 
 the CliteF and CodeGen branches. In the AbstractSyntax print will inherent from 
 Statement and will contain an expression, which it will evaluate and print.
+
+-- No such thing as if_fcmplt ... removing
