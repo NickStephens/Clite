@@ -84,3 +84,6 @@ the CliteF and CodeGen branches. In the AbstractSyntax print will inherent from
 Statement and will contain an expression, which it will evaluate and print.
 
 -- No such thing as if_fcmplt ... removing
+
+Feb 21, 2013
+I plan on making a print function to allow better debugging within the compiled jasmin files.
