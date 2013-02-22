@@ -90,3 +90,7 @@ I plan on making a print function to allow better debugging within the compiled 
 
 The print function now parses and is typechecked, but I'm having trouble get System.out.println to print, I think it only takes string arguments
 If this is the case then I'm going to have to call toString on them before I print which wouldn't be so bad
+
+Feb 22, 2013
+Nevermind the last two lines, apparently I just forgot to to print the "V" which
+represents that println has a return type of void.
