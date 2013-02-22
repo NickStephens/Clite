@@ -224,7 +224,7 @@ public class CodeGen {
 	else //It's a Bool
 		print_type = "Z";
 	
-	jfile.writeln("invokevirtual java/io/PrintStream/println(" + print_type + ")");
+	jfile.writeln("invokevirtual java/io/PrintStream/println(" + print_type + ")V");
     }
 
     private Type typeOf(Expression e, SymbolTable sym) {
