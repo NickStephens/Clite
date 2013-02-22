@@ -67,6 +67,12 @@ class Program {
 		String test = inner_display(spc, spc + spcing, l_node.test);
 		String body = inner_display(spc, spc + spcing, l_node.body); 	
 		return prefix + test + body;
+	} if (node instanceof Print) {
+		Print p_node = (Print) node;
+		String prefix = spcing + "Print:\n";
+		String expr = inner_display(spc, spc + spcing, p_node.to_print);
+		return prefix + expr;
+
 	} else {
 		String prefix = spcing + (node.getClass() + "").substring(6) + ": ";
 		String value = node + "\n"; 
