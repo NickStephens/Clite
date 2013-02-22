@@ -102,7 +102,7 @@ public class Parser {
     }
   
     private Statement statement() {
-        // Statement --> ; | Block | Assignment | IfStatement | WhileStatement
+        // Statement --> ; | Block | Assignment | IfStatement | WhileStatement | Print
         Statement s = new Skip();
 	if (token.type().equals(TokenType.LeftBrace)) {
 		match(TokenType.LeftBrace);
@@ -115,6 +115,9 @@ public class Parser {
 		s = ifStatement();
 	} else if (token.type().equals(TokenType.While)) {
 		s = whileStatement();
+	} else if (token.type().equals(TokenType.Print)) {
+		s = print();
+		match(TokenType.Semicolon);
 	} else {
 		match(TokenType.Semicolon);
 	}
@@ -170,6 +173,15 @@ public class Parser {
 	match(TokenType.RightParen);
 	Statement st = statement();
         return new Loop(test, st);  // student exercise
+    }
+
+    private Print print() {
+	// Print --> print ( Expression )
+	match(token.type());
+	match(TokenType.LeftParen);
+	Expression to_print = expression();
+	match(TokenType.RightParen);
+	return new Print(to_print);
     }
 
     private Expression expression () {
