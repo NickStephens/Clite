@@ -487,7 +487,11 @@ class Operator {
     }
     boolean ArithmeticOp ( ) {
         return val.equals(PLUS) || val.equals(MINUS)
-            || val.equals(TIMES) || val.equals(DIV);
+            || val.equals(TIMES) || val.equals(DIV)
+            || val.equals(INT_PLUS) || val.equals(INT_MINUS)
+            || val.equals(INT_TIMES) || val.equals(INT_DIV)
+            || val.equals(FLOAT_PLUS) || val.equals(FLOAT_MINUS)
+            || val.equals(FLOAT_TIMES) || val.equals(FLOAT_DIV);
     }
     boolean NotOp ( ) { return val.equals(NOT) ; }
     boolean NegateOp ( ) { return val.equals(NEG) ; }

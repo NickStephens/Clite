@@ -100,7 +100,11 @@ public class CodeGen {
         } if (s instanceof Block) { 
 			M((Block)s, symtable, jfile);
 			return;
-		}
+	} if (s instanceof Print) {
+			M((Print)s, symtable, jfile);
+			return;
+	}
+	
         throw new IllegalArgumentException("should never reach here");
     }
   
@@ -201,6 +205,52 @@ public class CodeGen {
             return M(l, M (l.body, state));
         else return state;
 	*/
+    }
+
+    void M (Print p, SymbolTable symtable, JasminFile jfile) throws IOException {
+	jfile.writeln("getstatic java/lang/System/out Ljava/io/PrintStream;");
+
+	M(p.to_print, symtable, jfile);
+
+	String print_type;
+	Type e_type = typeOf(p.to_print, symtable);
+	
+	if (e_type.equals(Type.FLOAT)) 
+		print_type = "F";
+	else if (e_type.equals(Type.INT))
+		print_type = "I";
+	else if (e_type.equals(Type.CHAR)) 
+		print_type = "C";
+	else //It's a Bool
+		print_type = "Z";
+	
+	jfile.writeln("invokevirtual java/io/PrintStream/println(" + print_type + ")");
+    }
+
+    private Type typeOf(Expression e, SymbolTable sym) {
+        if (e instanceof Value) return ((Value)e).type;
+        if (e instanceof Variable) {
+            Variable v = (Variable)e;
+            return (Type) sym.get(v).type;
+	}
+        if (e instanceof Binary) {
+            Binary b = (Binary)e;
+            if (b.op.ArithmeticOp( ))
+                if (typeOf(b.term1,sym)== Type.FLOAT)
+                    return (Type.FLOAT);
+                else return (Type.INT);
+            if (b.op.RelationalOp( ) || b.op.BooleanOp( )) 
+                return (Type.BOOL);
+        }
+        if (e instanceof Unary) {
+            Unary u = (Unary)e;
+            if (u.op.NotOp( ))        return (Type.BOOL);
+            else if (u.op.NegateOp( )) return typeOf(u.term,sym);
+            else if (u.op.intOp( ))    return (Type.INT);
+            else if (u.op.floatOp( )) return (Type.FLOAT);
+            else if (u.op.charOp( ))  return (Type.CHAR);
+        }
+        throw new IllegalArgumentException("should never reach here");
     }
 
     void applyBinary (Operator op, JasminFile jfile) throws IOException {
