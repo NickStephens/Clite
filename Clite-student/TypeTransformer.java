@@ -100,6 +100,10 @@ public class TypeTransformer {
                 out.members.add(T(stmt, tm));
             return out;
         }
+	if (s instanceof Print) {
+	    Print p = (Print) s;
+	    return new Print(T(p.to_print, tm));
+	}
         throw new IllegalArgumentException("should never reach here");
     }
     
