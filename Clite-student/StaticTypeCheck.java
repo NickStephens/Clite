@@ -190,6 +190,11 @@ public class StaticTypeCheck {
 		V(b.members.get(i), tm);
 	    return;
 	}
+	if (s instanceof Print) {
+	    Print p = (Print) s;
+	    V(p.to_print, tm);
+	    return;
+	}
 	throw new IllegalArgumentException("should never reach here");
     }
 
