@@ -87,3 +87,6 @@ Statement and will contain an expression, which it will evaluate and print.
 
 Feb 21, 2013
 I plan on making a print function to allow better debugging within the compiled jasmin files.
+
+The print function now parses and is typechecked, but I'm having trouble get System.out.println to print, I think it only takes string arguments
+If this is the case then I'm going to have to call toString on them before I print which wouldn't be so bad
