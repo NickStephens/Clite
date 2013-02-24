@@ -94,3 +94,6 @@ If this is the case then I'm going to have to call toString on them before I pri
 Feb 22, 2013
 Nevermind the last two lines, apparently I just forgot to to print the "V" which
 represents that println has a return type of void.
+
+Feb 23, 2013
+Wrote the clc (CLite Compile) script to compile clite. 
