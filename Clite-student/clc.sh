@@ -1,8 +1,5 @@
 #! /bin/bash
 
-wd=$(pwd)
-cwd=$(dirname "$0")
-
 java CodeGen $1 > /dev/null
 
 # Some bash string operations
