@@ -99,12 +99,12 @@ public class CodeGen {
 	SymbolTable symtable = new SymbolTable();
 	int i = 0;
         while (i < params.size()) { 
-			symtable.put(params.get(i).v, new Pair(params.get(i).t, (i + 1)));
+			symtable.put(params.get(i).v, new Pair(params.get(i).t, i));
 			i++;
 	}
 	int j = 0;
 	while (i < (params.size() + locals.size())) {
-			symtable.put(locals.get(j).v, new Pair(locals.get(j).t, (i + 1)));
+			symtable.put(locals.get(j).v, new Pair(locals.get(j).t, j));
 			i++;
 			j++;
 	}

@@ -133,6 +133,8 @@ a global field
 Feb 28:
 Static methods pass parameters through local 0! there is no space reserved for the object, since these methods do not operate or belong to objects the JVM is smart enough to leave more spce for formal parameters!
 
+Recursive methods where return statements only exists though off my branching mechanism. Becuase Jasmin sees a COMPLETE? branch which does not return and leads into no where
+
 Reflection:
 
 As with any project some poor design decisions were made, and some steps could have been taken to save time and write more elegant code.
