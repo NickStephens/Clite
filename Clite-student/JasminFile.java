@@ -116,7 +116,6 @@ public class JasminFile extends FileWriter {
 	}	
 	
 	public void writeln(String to_write) throws IOException {
-		write("\t");
 		write(to_write);
 		write("\n");
 	}
@@ -144,11 +143,11 @@ public class JasminFile extends FileWriter {
 	}
 
 	public void function_writeout(Type return_type) throws IOException {
-		String t_prefix;
+		String t_prefix = "";
 		if (return_type.equals(Type.INT) || return_type.equals(Type.BOOL)
 		 || return_type.equals(Type.CHAR)) 
 			t_prefix = "i";
-		else // it's of type float	
+		else if (return_type.equals(Type.FLOAT))
 			t_prefix = "f";
 		writeln("\n" + t_prefix + "return");
 		write(".end method\n");
