@@ -17,10 +17,10 @@ new .class file in your current directory!
 >   .class files are located in the current directory 
 > * Note: Clite was not designed by me and was assigned as a school project. Clite 
 > comes as a skeleton. You can find the skeleton 
-> [here]("http://highered.mcgraw-hill.com/sites/0072866098/student_view0/clite_
-interpreter_.html"), it goes hand-in-hand with the book 
+> <a href="http://highered.mcgraw-hill.com/sites/0072866098/student_view0/clite_
+interpreter_.html">here</a>, it goes hand-in-hand with the book 
 > <u>Programming Languages: Priniciple and Paradigms</u> by Allen B. Tucker and 
 > Robert E. Noonan. However, the JVM ByteCode compilation extension and _CliteF_ 
 > interpretation is of my own design.
 
-__Dependencies:__ [Jasmin]("http://jasmin.sourceforge.net/")
+__Dependencies:__ <a href="http://jasmin.sourceforge.net/">Jasmin</a>
