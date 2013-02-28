@@ -8,6 +8,10 @@ public class JasminFile extends FileWriter {
 		super(pathname); // passes filename, and tells writer to append
 		filename = pathname;
 	}
+	
+	public String get_class( ) {
+		return sanitize_path();
+	}
 
 	private String sanitize_path( ) {
 		// Go backwards through the string and remove anything after the first
@@ -143,6 +147,8 @@ public class JasminFile extends FileWriter {
 	}
 
 	public void function_writeout(Type return_type) throws IOException {
+		if (return_type.equals(Type.VOID))
+		writeln("return");
 		write(".end method\n");
 	}
 }

@@ -130,6 +130,9 @@ a global field
 	however, since variables are a single node this test should only take
 	place in one code block
 
+Feb 28:
+Static methods pass parameters through local 0! there is no space reserved for the object, since these methods do not operate or belong to objects the JVM is smart enough to leave more spce for formal parameters!
+
 Reflection:
 
 As with any project some poor design decisions were made, and some steps could have been taken to save time and write more elegant code.

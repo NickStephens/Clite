@@ -178,14 +178,15 @@ public class CodeGen {
 		jfile.writeln(store + " " + symtable.getIndex((Variable) a.target));
 		} else { // this node is trying to assign a global
 			String type;
-			Type descriptor = global_symtable.get(target);
+			Type descriptor = global_symtable.get(target.id);
 			if (descriptor.equals(Type.INT) || 
 			descriptor.equals(Type.BOOL) || 
 			descriptor.equals(Type.CHAR))
 				type = "I";
 			else // it's a float
 				type = "F";
-			jfile.writeln("putstatic " + target + " " + type);
+			jfile.writeln("putstatic " + jfile.get_class() + "/" 
+			+ target + " " + type);
 		}
     }
   
@@ -286,8 +287,8 @@ public class CodeGen {
 	for (Declaration pi : callee.params)
 		j_params += pi.t.to_jasmin();	
 	
-	jfile.writeln("invokestatic " + c.name + "(" + j_params + ")" + 
-		callee.t.to_jasmin()); 
+	jfile.writeln("invokestatic " + jfile.get_class() + "/" 
+	+ c.name + "(" + j_params + ")" + callee.t.to_jasmin()); 
     }
 	
     void M (Return r, SymbolTable symtable, JasminFile jfile) throws IOException {
@@ -562,14 +563,15 @@ public class CodeGen {
 		}
 		else { // this node is trying to assign a global
 			String type;
-			Type descriptor = global_symtable.get(v);
+			Type descriptor = global_symtable.get(v.id);
 			if (descriptor.equals(Type.INT) || 
 			descriptor.equals(Type.BOOL) || 
 			descriptor.equals(Type.CHAR))
 				type = "I";
 			else // it's a float
 				type = "F";
-			jfile.writeln("getstatic " + v + " " + type);
+			jfile.writeln("getstatic " + jfile.get_class() + "/" 
+			+ v + " " + type);
 		}
 		
     	return;
@@ -599,8 +601,8 @@ public class CodeGen {
 	for (Declaration pi : callee.params)
 		j_params += pi.t.to_jasmin();	
 	
-	jfile.writeln("invokestatic " + c.name + "(" + j_params + ")" + 
-		callee.t.to_jasmin()); 
+	jfile.writeln("invokestatic " + jfile.get_class() + "/" + 
+	c.name + "(" + j_params + ")" + callee.t.to_jasmin()); 
 
 	return;
     	}
