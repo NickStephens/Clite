@@ -7,6 +7,7 @@ import java.io.*;
 public class CodeGen {
 
 	private int branch_cnt = 0;
+	private SymbolTable current_table;
 
 	private class Pair {
 			
@@ -35,6 +36,10 @@ public class CodeGen {
 			return get(v).index;
 		}
 
+		boolean contains_symbol(Variable symbol) {
+			return containsKey(symbol);
+		}
+
 		void display ( ) {
 			String tm = "{ ";
 			Iterator it = entrySet().iterator();
@@ -49,8 +54,9 @@ public class CodeGen {
 
 	void M (Program p, String filename) throws IOException {
 
+		HashMap<String, SymbolTable> symtable_hash = new HashMap<String, SymbolTable>();
 		// New class required symbol table to map variable names to numbers
-		SymbolTable symtable = init_symboltable(p.decpart);
+		init_symboltables(symtable_hash, p.functions);
 		// The constructor for SymbolTable must tie numbers to symbols, (ie <local_0, a>, <local_1, b> ...) Parameters will have to be accounted for
 
 		// Intiliaze file to write to here.
@@ -61,27 +67,53 @@ public class CodeGen {
 
 		JasminFile assem_out = new JasminFile(jfile + ".j");
 
+		assem_out.write_class_sig();
+		assem_out.write_globals(p.globals);
 		assem_out.JVMBoiler();
 
-		// preamble writes the function type signature, then allocates stack and local space
-		assem_out.preamble(p.decpart);
+		for (Function f : p.functions) {
+			M (f, symtable_hash, assem_out);
+		}
+		
+		assem_out.close();
 
-		// The new M function takes the file to write to
-		// it goes through the body and writes the instructions
-		M(p.body, symtable, assem_out);
-
-		// writeout writes the stuff for ending the main method and
-		// closes the file
-		assem_out.writeout();
     }
   
-    SymbolTable init_symboltable (Declarations d) {
-        SymbolTable symtable = new SymbolTable();
+    void init_symboltables (HashMap<String, SymbolTable> symtable_hash, Functions f) {
+	for (Function fi : f) {
+		symtable_hash.put(fi.id, init_symboltable(fi.params, fi.locals));
+	}
+
+    }
+	
+    SymbolTable init_symboltable (Declarations params, Declarations locals) {
 		// We must increment all local #s by one, because #0 is reserved 
 		// (I think for the receiver object)
-        for (int i=0; i < d.size(); i++) 
-			symtable.put(d.get(i).v, new Pair(d.get(i).t, (i + 1)));
+	SymbolTable symtable = new SymbolTable();
+	int i = 0;
+        while (i < params.size()) { 
+			symtable.put(params.get(i).v, new Pair(params.get(i).t, (i + 1)));
+			i++;
+	}
+	int j = 0;
+	while (i < (params.size() + locals.size())) {
+			symtable.put(locals.get(j).v, new Pair(locals.get(j).t, (i + 1)));
+			i++;
+			j++;
+	}
         return symtable;
+    }
+
+    void M (Function f, HashMap<String, SymbolTable> symtable_hash, JasminFile jfile) throws IOException {
+	if (! f.id.equals("main")) {	
+		jfile.function_preamble(f.id, f.t, f.params, f.locals);
+		M (f.body, symtable_hash.get(f.id), jfile);	
+		jfile.function_writeout(f.t);	
+	} else {
+		jfile.main_preamble(f.locals);
+		M (f.body, symtable_hash.get(f.id), jfile);	
+		jfile.main_writeout();
+	}
     }
 
     void M (Statement s, SymbolTable symtable, JasminFile jfile) throws IOException {
@@ -504,12 +536,12 @@ public class CodeGen {
         prog.display();    // student exercise
         System.out.println("\nBegin type checking...");
         System.out.println("Type map:");
-        TypeMap map = StaticTypeCheck.typing(prog.decpart);
+        TypeMap map = StaticTypeCheck.typing(prog.globals, prog.functions);
         map.display();    // student exercise
         StaticTypeCheck.V(prog);
         Program out = TypeTransformer.T(prog, map);
         System.out.println("Output AST");
-        //out.display();    // student exercise
+        out.display();    // student exercise
         CodeGen codegen = new CodeGen( );
 		System.out.println("\nReducing into Jasmin Instructions...");
 

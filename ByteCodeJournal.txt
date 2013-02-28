@@ -106,6 +106,7 @@ Details:
 1. How are globals going to be stored in Jasmin?
 2. What kind of methods will Clite's functions translate to?
 3. How will symbol table information be stored for each individual function?
+4. How will functions know when the variable they need to access is a global?
 
 1. I think all globals will be stored in Jasmin as static fields.
 2. methods will all be static 
@@ -121,3 +122,10 @@ How to handle symbol table traversal:
 	won't need to worry about managing a dynamic array!)
 	(How will this affect recursion?)
 
+4. The function which initializes Symbol Tables will have contain a new function,
+contains_symbol, if this function returns true then it is safe to resolve the 
+variable against the current symbol table, otherwise resolve the variable against
+a global field
+	Disadvantages: Requires a test whenever a variable has to be resovled;
+	however, since variables are a single node this test should only take
+	place in one code block

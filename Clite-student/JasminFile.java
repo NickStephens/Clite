@@ -32,6 +32,12 @@ public class JasminFile extends FileWriter {
 
 		return san_str;
 	}
+
+	public void write_class_sig() throws IOException {
+		writeln(".class public" + " " + sanitize_path());
+		writeln(".super java/lang/Object");
+		writeln();
+	}
 	
 	public void write_globals(Declarations globals) throws IOException{
 		for (Declaration global : globals) {
@@ -48,9 +54,6 @@ public class JasminFile extends FileWriter {
 		
 				
 	public void JVMBoiler() throws IOException {
-		write(".class public" + " " + sanitize_path() + "\n");
-		write(".super java/lang/Object\n");
-		write("\n");
 		write(".method public <init>()V\n");
 		write("\taload_0\n");
 		write("\n");
@@ -135,6 +138,11 @@ public class JasminFile extends FileWriter {
 		writeln("COMPLETED" + branch_cnt + ":");
 	}
 
+	public void main_writeout() throws IOException {
+		writeln("\n" + "return");
+		write(".end method\n");
+	}
+
 	public void function_writeout(Type return_type) throws IOException {
 		String t_prefix;
 		if (return_type.equals(Type.INT) || return_type.equals(Type.BOOL)
@@ -144,6 +152,5 @@ public class JasminFile extends FileWriter {
 			t_prefix = "f";
 		writeln("\n" + t_prefix + "return");
 		write(".end method\n");
-		close();
 	}
 }
