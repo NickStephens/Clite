@@ -188,7 +188,8 @@ public class Parser {
     }
   
     private Statement statement() {
-        // Statement --> ; | Block | Assignment | IfStatement | WhileStatement | CallStatement | ReturnStatement
+        // Statement --> ; | Block | Assignment | IfStatement | WhileStatement | CallStatement | ReturnStatement | Print
+        // Statement --> ; | Block | Assignment | IfStatement | WhileStatement | Print
         Statement s = new Skip();
 	if (token.type().equals(TokenType.LeftBrace)) {
 		match(TokenType.LeftBrace);
@@ -207,6 +208,9 @@ public class Parser {
 		s = whileStatement();
 	} else if (token.type().equals(TokenType.Return)) {
 		s = returnStatement();
+		match(TokenType.Semicolon);
+	} else if (token.type().equals(TokenType.Print)) {
+		s = print();
 		match(TokenType.Semicolon);
 	} else {
 		match(TokenType.Semicolon);
@@ -282,6 +286,15 @@ public class Parser {
 	return new Return(new Variable("$ret"), result);
     }
 
+    private Print print() {
+	// Print --> print ( Expression )
+	match(token.type());
+	match(TokenType.LeftParen);
+	Expression to_print = expression();
+	match(TokenType.RightParen);
+	return new Print(to_print);
+    }
+
     private Expression expression () {
         // Expression --> Conjunction { || Conjunction }
 	Expression e = conjunction();
@@ -352,12 +365,12 @@ public class Parser {
         // Factor --> [ UnaryOp ] Primary 
         if (isUnaryOp()) {
 	    Operator op;
-	    if (token.type().equals(TokenType.Not)) 
-            	op = new Operator(match(token.type()));
-            else {
+	    if (token.type().equals(TokenType.Not)) {
+            	op = new Operator(Operator.NOT);
+	    } else {
 		op = new Operator(Operator.NEG);
-		token = lexer.next();
 	    }
+	    token = lexer.next();
             Expression term = primary();
             return new Unary(op, term);
         }

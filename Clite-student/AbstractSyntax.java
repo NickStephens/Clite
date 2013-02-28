@@ -131,6 +131,11 @@ class Program {
 		String index = spcing + spc + "id: " + a_node.id + "\n";
 		String contents = inner_display(spc, spc + spcing, a_node.index);
 		return prefix + index + contents;
+	} if (node instanceof Print) {
+		Print p_node = (Print) node;
+		String prefix = spcing + "Print:\n";
+		String expr = inner_display(spc, spc + spcing, p_node.to_print);
+		return prefix + expr;
 	} else {
 		String prefix = spcing + (node.getClass() + "").substring(6) + ": ";
 		String value = node + "\n"; 
@@ -657,7 +662,11 @@ class Operator {
     }
     boolean ArithmeticOp ( ) {
         return val.equals(PLUS) || val.equals(MINUS)
-            || val.equals(TIMES) || val.equals(DIV);
+            || val.equals(TIMES) || val.equals(DIV)
+            || val.equals(INT_PLUS) || val.equals(INT_MINUS)
+            || val.equals(INT_TIMES) || val.equals(INT_DIV)
+            || val.equals(FLOAT_PLUS) || val.equals(FLOAT_MINUS)
+            || val.equals(FLOAT_TIMES) || val.equals(FLOAT_DIV);
     }
     boolean NotOp ( ) { return val.equals(NOT) ; }
     boolean NegateOp ( ) { return val.equals(NEG) ; }
@@ -690,7 +699,7 @@ class Operator {
     final static String boolMap[ ] [ ] = {
         {EQ, BOOL_EQ}, {NE, BOOL_NE}, {LT, BOOL_LT},
         {LE, BOOL_LE}, {GT, BOOL_GT}, {GE, BOOL_GE},
-		{AND, AND}, {OR, OR}
+	{OR, OR}, {AND, AND}, {NOT, NOT}
     };
 
     final static private Operator map (String[][] tmap, String op) {

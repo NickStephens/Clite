@@ -162,6 +162,10 @@ public class TypeTransformer {
 		}
 		return new CallStatement(c.name, t_args);
 	}
+	if (s instanceof Print) {
+	    Print p = (Print) s;
+	    return new Print(T(p.to_print, tm));
+	}
         throw new IllegalArgumentException("should never reach here");
     }
     

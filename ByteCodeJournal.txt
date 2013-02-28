@@ -1,0 +1,99 @@
+Nick Stephens
+
+---------------------------------
+Producing JVM Byte Code for Clite
+---------------------------------
+
+Jan 12, 2013
+
+Questions:
+a. When in the compiling process should byte code be produced?
+b. What kind of formatting or boiler plate do I need to abide by?
+
+a. Probably in Semantic Interpretation
+
+Jan 20, 2013
+
+Conceptual Details:
+-Need to write to a file
+-Need to be able to extract type of values and variables (JVM has type-specific instructions)
+-Need to be able to statically determine stack size and local size of a function
+-Need to be able to generically translate high-level control structures into their low-level equivalents
+
+Implementation Details:
+-All meaning functions should begin writing to the file passed to it.
+	or
+-All meaning functions should begin returning strings
+-Write JVM boilerplate in M(Program)
+
+-Creating new class JasminFile, which is a descendent of Java Lib File
+
+All functions will be static, and the amount and types of their arguments must be deterministic.
+
+Jan 21, 2013
+
+Conceptual Details:
+-I've been able to limit the stack (for plain Clite) to two elements
+-A symbol table is necessary to track which variables are tied to which local's (locals in the JVM are represented with integers)
+
+Implementation Details:
+-When pushing values (or constants) onto the stack, I will use the "ldc" instruction
+-SymbolTable may have to be expanded into carrying the symbol's type, this will allow us to quickly determine what type of storage instruction
+ needs to be written
+-The JVM lacks the instructions to strictly store and represent booleans and characters. Need to research examples
+
+Jan 23, 2013
+
+Bugs:
+-The inclusion of parenthesised expressions will break the stack limit of two; however I think evaluation order is maintained
+
+Conceptual Details:
+-Booleans and characters are represented as Ints in Jasmin
+
+Implementation details:
+-Stack counter which counts the number of elements the largest expression needs
+-	This will be stored in a global variable and will be written once all expressions are traversed.
+
+Troubles:
+-none of the comparison operators return an int alone, most of them seem to branch. 
+-creating modular labels procedurally is another issue.
+
+-labels (or subroutines) which push ints (in response to the first trouble) will have trouble returning to the place where the branch originated
+-lookupswitches (or perhaps comparisons) where unique labels are below (ie two labels for each comparison!)
+
+example
+int1  0
+int2  2
+if_icmpgt TRUE0
+
+TRUE0:
+bipush 1 
+goto COMPLETE0 
+
+FALSE0:
+bipush 0
+
+COMPLETE0: ;We know the result is on the stack
+
+The zeros here would be for this particular comparison, these numbers would have constantly be generated per comparison
+
+Feb 20, 2013
+Loops and conditonals are now compiling. I'm going to now include a print statement.
+This new statement should exist in a seperate module file, to help git merge both 
+the CliteF and CodeGen branches. In the AbstractSyntax print will inherent from 
+Statement and will contain an expression, which it will evaluate and print.
+
+-- No such thing as if_fcmplt ... removing
+
+Feb 21, 2013
+I plan on making a print function to allow better debugging within the compiled jasmin files.
+
+The print function now parses and is typechecked, but I'm having trouble get System.out.println to print, I think it only takes string arguments
+If this is the case then I'm going to have to call toString on them before I print which wouldn't be so bad
+
+Feb 22, 2013
+Nevermind the last two lines, apparently I just forgot to to print the "V" which
+represents that println has a return type of void.
+
+Feb 23, 2013
+Wrote the clc (CLite Compile) script to compile clite. 
