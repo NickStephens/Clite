@@ -222,12 +222,6 @@ public class CodeGen {
 	jfile.writeln("COMPLETE" + current_branch_cnt + ":");
 	
 
-	/* from the days where Clite was just an interpreter
-        if (M(c.test, state).boolValue( ))
-            return M (c.thenbranch, state);
-        else
-            return M (c.elsebranch, state);
-	*/
     }
    
     void M (Loop l, SymbolTable symtable, JasminFile jfile) throws IOException {
@@ -252,11 +246,6 @@ public class CodeGen {
 
 	jfile.writeln("LOOPEXIT" + current_branch_cnt + ":");
 	
-	/*
-        if (M (l.test, state).boolValue( ))
-            return M(l, M (l.body, state));
-        else return state;
-	*/
     }
 
     void M (Print p, SymbolTable symtable, JasminFile jfile) throws IOException {
@@ -518,8 +507,9 @@ public class CodeGen {
 				jfile.writeln("ldc " + (int)c.charValue());
 				return;
 			}
-		} if (e instanceof Variable) { 
-			Variable v = (Variable) e;
+	} if (e instanceof Variable) { 
+		Variable v = (Variable) e;
+		if (symtable.containsKey(v)) {
 			Type v_type = symtable.getType(v);
 			String load = "null";
 			if (v_type.equals(Type.INT) || v_type.equals(Type.CHAR)
@@ -531,9 +521,21 @@ public class CodeGen {
 				throw new IllegalArgumentException("should never reach here");
 			}
 			jfile.writeln(load + " " +  symtable.getIndex(v));
-            return;
-	    }
-        if (e instanceof Binary) {
+		}
+		else { // this node is trying to assign a global
+			String type;
+			Type descriptor = global_symtable.get(v);
+			if (descriptor.equals(Type.INT) || 
+			descriptor.equals(Type.BOOL) || 
+			descriptor.equals(Type.CHAR))
+				type = "I";
+			else // it's a float
+				type = "F";
+			jfile.writeln("getstatic " + v + " " + type);
+		}
+		
+    	return;
+    	} if (e instanceof Binary) {
 			// I think applyBinay should handle the work here (I don't know if this is good design?)
             Binary b = (Binary)e;
 			M(b.term1, symtable, jfile);

@@ -129,3 +129,11 @@ a global field
 	Disadvantages: Requires a test whenever a variable has to be resovled;
 	however, since variables are a single node this test should only take
 	place in one code block
+
+Reflection:
+
+As with any project some poor design decisions were made, and some steps could have been taken to save time and write more elegant code.
+
+* For one, a function belonging to the Type class which is responsible for converting Clite types (Int, Bool, Char, Float) to Jasmin types (I, F) when the need arose would have been really helpful and saved me time from writing tedious and repetive branches to print the correct Jasmin type.
+* A more general symbol table approach, responsible for both globals and locals/params
+
