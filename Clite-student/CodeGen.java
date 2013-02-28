@@ -7,7 +7,7 @@ import java.io.*;
 public class CodeGen {
 
 	private int branch_cnt = 0;
-	private SymbolTable current_table;
+	private static HashMap<String, Type> global_symtable; // This is kind of hacky and inconsistent with the rest of the module, because it refuses to be passed around like the symbol table
 
 	private class Pair {
 			
@@ -70,6 +70,11 @@ public class CodeGen {
 		assem_out.write_class_sig();
 		assem_out.write_globals(p.globals);
 		assem_out.JVMBoiler();
+
+		// initializing the global_symtable
+		global_symtable = new HashMap<String, Type>();
+		for (Declaration global : p.globals) 
+			global_symtable.put(global.v.id, global.t);
 
 		for (Function f : p.functions) {
 			M (f, symtable_hash, assem_out);
@@ -149,17 +154,32 @@ public class CodeGen {
 		M(a.source, symtable, jfile); // this should write the expression 
 									  // onto the stack
 
-		Type target_type = symtable.getType((Variable) a.target);
-		String store;
-		if (target_type.equals(Type.INT) || target_type.equals(Type.CHAR) || target_type.equals(Type.BOOL)) {
-			store = "istore";
-		} else if (target_type.equals(Type.FLOAT)) {
-			store = "fstore";
-		} else {
-			throw new IllegalArgumentException("should never reach here");
-		}
-		
+		// This has a chance to fail if the variable is a global
+		//	With the chance for a function to assign to a global
+		//	We make a decision based on the symbol tables contents
+		Variable target = (Variable) a.target;
+		if (symtable.containsKey(target)) {
+			Type target_type = symtable.getType((Variable) a.target);
+			String store;
+			if (target_type.equals(Type.INT) || target_type.equals(Type.CHAR) || target_type.equals(Type.BOOL)) {
+				store = "istore";
+			} else if (target_type.equals(Type.FLOAT)) {
+				store = "fstore";
+			} else {
+				throw new IllegalArgumentException("should never reach here");
+			}
 		jfile.writeln(store + " " + symtable.getIndex((Variable) a.target));
+		} else { // this node is trying to assign a global
+			String type;
+			Type descriptor = global_symtable.get(target);
+			if (descriptor.equals(Type.INT) || 
+			descriptor.equals(Type.BOOL) || 
+			descriptor.equals(Type.CHAR))
+				type = "I";
+			else // it's a float
+				type = "F";
+			jfile.writeln("putstatic " + target + " " + type);
+		}
     }
   
     void M (Block b, SymbolTable symtable, JasminFile jfile) throws IOException {
