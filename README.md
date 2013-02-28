@@ -16,4 +16,4 @@ new .class file in your current directory!
 > clc.sh assumes that the jasmin.jar is located in <code>~/bin</code> and that the
 > .class files are located in the current directory 
 
-Dependencies: <a href="http://jasmin.sourceforge.net/" >Jasmin</a> 
+__Dependencies:__ <a href="http://jasmin.sourceforge.net/" >Jasmin</a> ###
