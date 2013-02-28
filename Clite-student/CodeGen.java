@@ -8,6 +8,7 @@ public class CodeGen {
 
 	private int branch_cnt = 0;
 	private static HashMap<String, Type> global_symtable; // This is kind of hacky and inconsistent with the rest of the module, because it refuses to be passed around like the symbol table
+	private Program prog; // Again hacky
 
 	private class Pair {
 			
@@ -53,6 +54,7 @@ public class CodeGen {
 	}
 
 	void M (Program p, String filename) throws IOException {
+		prog = p;
 
 		HashMap<String, SymbolTable> symtable_hash = new HashMap<String, SymbolTable>();
 		// New class required symbol table to map variable names to numbers
@@ -140,8 +142,13 @@ public class CodeGen {
 	} if (s instanceof Print) {
 			M((Print)s, symtable, jfile);
 			return;
-	}
-	
+	} if (s instanceof CallStatement) {
+			M((CallStatement)s, symtable, jfile);
+			return;
+	} if (s instanceof Return) {	
+			M((Return)s, symtable, jfile);
+			return;
+	}	
         throw new IllegalArgumentException("should never reach here");
     }
   
@@ -266,6 +273,30 @@ public class CodeGen {
 		print_type = "Z";
 	
 	jfile.writeln("invokevirtual java/io/PrintStream/println(" + print_type + ")V");
+    }
+
+    void M (CallStatement c, SymbolTable symtable, JasminFile jfile) throws IOException {	
+	// evaluate the args and push them to the stack 		
+	for (Expression arg : c.args) 
+		M(arg, symtable, jfile);
+
+	Function callee = prog.functions.get(c.name);
+
+	String j_params = "";
+	for (Declaration pi : callee.params)
+		j_params += pi.t.to_jasmin();	
+	
+	jfile.writeln("invokestatic " + c.name + "(" + j_params + ")" + 
+		callee.t.to_jasmin()); 
+    }
+	
+    void M (Return r, SymbolTable symtable, JasminFile jfile) throws IOException {
+	M (r.result, symtable, jfile);
+	String j_type =typeOf(r.result, symtable).to_jasmin(); 
+	if (j_type.equals("I"))	
+		jfile.writeln("ireturn");
+	else // it's gotta be a float
+		jfile.writeln("freturn");
     }
 
     private Type typeOf(Expression e, SymbolTable sym) {
@@ -549,6 +580,23 @@ public class CodeGen {
             applyUnary(u.op, jfile);
 			return;
         }
+	if (e instanceof CallExpression) {
+	CallExpression c = (CallExpression) e;
+	// evaluate the args and push them to the stack
+	for (Expression arg : c.args) 
+		M(arg, symtable, jfile);
+
+	Function callee = prog.functions.get(c.name);
+
+	String j_params = "";
+	for (Declaration pi : callee.params)
+		j_params += pi.t.to_jasmin();	
+	
+	jfile.writeln("invokestatic " + c.name + "(" + j_params + ")" + 
+		callee.t.to_jasmin()); 
+
+	return;
+    	}
         throw new IllegalArgumentException("should never reach here");
     }
 

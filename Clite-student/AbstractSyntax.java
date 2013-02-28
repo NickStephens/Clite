@@ -224,6 +224,17 @@ class Type {
     private Type (String t) { id = t; }
 
     public String toString ( ) { return id; }
+
+    public String to_jasmin() {
+	if(id.equals(Type.INT) || id.equals(Type.BOOL) || id.equals(Type.CHAR))
+		return "I";
+	else if (id.equals(Type.FLOAT))
+		return "F";
+	else if (id.equals(Type.VOID))
+		return "V";
+	else
+		throw new IllegalArgumentException("No such type");
+    }
 }
 
 abstract class Statement {
