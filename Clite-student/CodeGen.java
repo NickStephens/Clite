@@ -303,7 +303,10 @@ public class CodeGen {
         if (e instanceof Value) return ((Value)e).type;
         if (e instanceof Variable) {
             Variable v = (Variable)e;
-            return (Type) sym.get(v).type;
+	    if (sym.containsKey(v)) 
+            	return (Type) sym.get(v).type;
+	    else // it's trying to access a global
+		return (Type) global_symtable.get(v.id);
 	}
         if (e instanceof Binary) {
             Binary b = (Binary)e;
@@ -322,6 +325,10 @@ public class CodeGen {
             else if (u.op.floatOp( )) return (Type.FLOAT);
             else if (u.op.charOp( ))  return (Type.CHAR);
         }
+	if (e instanceof CallExpression) {
+	    CallExpression c = (CallExpression) e;
+	    return prog.functions.get(c.name).t; 
+	}		
         throw new IllegalArgumentException("should never reach here");
     }
 

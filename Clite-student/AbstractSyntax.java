@@ -225,12 +225,13 @@ class Type {
 
     public String toString ( ) { return id; }
 
+    // returns the equivaled Jasmin type descriptor
     public String to_jasmin() {
-	if(id.equals(Type.INT) || id.equals(Type.BOOL) || id.equals(Type.CHAR))
+	if(this.equals(Type.INT) || this.equals(Type.BOOL) || this.equals(Type.CHAR))
 		return "I";
-	else if (id.equals(Type.FLOAT))
+	else if (this.equals(Type.FLOAT))
 		return "F";
-	else if (id.equals(Type.VOID))
+	else if (this.equals(Type.VOID))
 		return "V";
 	else
 		throw new IllegalArgumentException("No such type");
