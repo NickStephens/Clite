@@ -32,6 +32,20 @@ public class JasminFile extends FileWriter {
 
 		return san_str;
 	}
+	
+	public void write_globals(Declarations globals) throws IOException{
+		for (Declaration global : globals) {
+			String global_sig = ".field public static ";
+			global_sig += global.v.id;
+			if (global.t.equals(Type.INT) || global.t.equals(Type.BOOL)
+				|| global.t.equals(Type.CHAR))
+				global_sig += " I";	
+			else
+				global_sig += " V";
+			writeln(global_sig);
+		}
+	}
+		
 				
 	public void JVMBoiler() throws IOException {
 		write(".class public" + " " + sanitize_path() + "\n");
@@ -46,22 +60,56 @@ public class JasminFile extends FileWriter {
 		write("\n");
 	}
 
+	public void main_preamble(Declarations locals) throws IOException {
+
+		writeln(".method public static main([Ljava/lang/String;)V");
+		writeln("\t.limit stack" + " " + "14" + " ;(Hack!) Although it is possible to statically determine the size of the stack based off counting expression information \n\t\t\t;in a function it's too much work for now. ");
+		// due to how Clite's expressions over operators are evaluated
+		// we can safely limit the stack to two elements; however this will
+		// change when we're generating code for CliteF and we need to push
+		// the arguments to a function on the stack
+		writeln("\t.limit locals" + " " + (locals.size() + 1) 
+		+ " " +  "; #0 is reserved information is statically determined by counting declarations");
+		writeln();
+	}
+		
+
 	/*
 		Locals limit is how many variables we need to store in a call, keep in mind
 		the JVM passes parameters through locals 0,1,2, and so on, so the locals 
 		limit should be the number of parameters plus the numbers of local variables declared
 		(How will globals work?)
 	*/
-	public void preamble(Declarations dec) throws IOException {
-		write(".method public static main([Ljava/lang/String;)V\n");
-		write("\t.limit stack" + " " + "14" + " ;(Hack!) Although it is possible to statically determine the size of the stack based off counting expression information \n\t\t\t;in a function it's too much work for now. " + "\n");
+	public void function_preamble(String func_name, Type return_type, Declarations params, Declarations locals) throws IOException {
+
+		// Determing the method's signature
+		String method_sig = ".method public static ";
+		method_sig += func_name;
+		method_sig += "(";
+		for (Declaration param : params) {
+			if (param.t.equals(Type.INT) || param.t.equals(Type.CHAR) ||				param.t.equals(Type.BOOL))
+			method_sig += "I";
+			else
+			method_sig += "F";
+		}	
+		method_sig += ")";
+		if (return_type.equals(Type.INT) || return_type.equals(Type.CHAR) 
+			|| return_type.equals(Type.BOOL))
+			method_sig += "I";
+		else if (return_type.equals(Type.FLOAT)) 
+			method_sig += "F";
+		else // return_type is of type void
+			method_sig += "V";
+		
+		writeln(method_sig);
+		writeln("\t.limit stack" + " " + "14" + " ;(Hack!) Although it is possible to statically determine the size of the stack based off counting expression information \n\t\t\t;in a function it's too much work for now. ");
 		// due to how Clite's expressions over operators are evaluated
 		// we can safely limit the stack to two elements; however this will
 		// change when we're generating code for CliteF and we need to push
 		// the arguments to a function on the stack
-		write("\t.limit locals" + " " + (dec.size() + 1) + " " + 
-				"; #0 is reserved information is statically determined by counting declarations" + "\n");
-		write("\n");
+		writeln("\t.limit locals" + " " + (params.size() + locals.size() + 1) 
+		+ " " +  "; #0 is reserved information is statically determined by counting declarations");
+		writeln();
 	}	
 	
 	public void writeln(String to_write) throws IOException {
@@ -87,8 +135,14 @@ public class JasminFile extends FileWriter {
 		writeln("COMPLETED" + branch_cnt + ":");
 	}
 
-	public void writeout( ) throws IOException {
-		writeln("\nreturn");
+	public void function_writeout(Type return_type) throws IOException {
+		String t_prefix;
+		if (return_type.equals(Type.INT) || return_type.equals(Type.BOOL)
+		 || return_type.equals(Type.CHAR)) 
+			t_prefix = "i";
+		else // it's of type float	
+			t_prefix = "f";
+		writeln("\n" + t_prefix + "return");
 		write(".end method\n");
 		close();
 	}

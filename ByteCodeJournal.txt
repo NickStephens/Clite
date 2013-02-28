@@ -97,3 +97,27 @@ represents that println has a return type of void.
 
 Feb 23, 2013
 Wrote the clc (CLite Compile) script to compile clite. 
+
+Feb 27, 2013
+Starting work on CodeGen for CliteF, Clite with functions.
+
+Details:
+
+1. How are globals going to be stored in Jasmin?
+2. What kind of methods will Clite's functions translate to?
+3. How will symbol table information be stored for each individual function?
+
+1. I think all globals will be stored in Jasmin as static fields.
+2. methods will all be static 
+3. Each individual function will have its own symbol table
+
+How to handle symbol table traversal:
+	1. Can store symbol tables in a stack, pushing and poping as we enter new
+	symbol tables, this may not be necessary though as we don't need to store
+	volatile values only static values representing the local
+	(How will this affect recursion?)
+	2. Can simply have a current symbol table instance variable, this will 
+	consume a lot less memory and overhead (we're only storing a string, we 
+	won't need to worry about managing a dynamic array!)
+	(How will this affect recursion?)
+
