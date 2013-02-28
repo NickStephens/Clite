@@ -8,6 +8,5 @@ EXTEN_LEN=${#EXTEN}
 
 # This operation cuts off the .cpp extension
 jasm=${1:0:$(expr ${#1} - $EXTEN_LEN)} 
-echo "$jasm"
 
-java -jar /Users/Nick/bin/jasmin.jar $jasm.j > /dev/null
+java -jar ~/bin/jasmin.jar $jasm.j > /dev/null
