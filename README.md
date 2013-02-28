@@ -15,6 +15,7 @@ new .class file in your current directory!
 
 > * clc.sh assumes that the jasmin.jar is located in <code>~/bin</code> and that the
 >   .class files are located in the current directory 
+>
 > * Note: Clite was not designed by me and was assigned as a school project. Clite 
 > comes as a skeleton. You can find the skeleton 
 > <a href="http://highered.mcgraw-hill.com/sites/0072866098/student_view0/clite_
