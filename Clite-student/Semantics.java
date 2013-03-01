@@ -48,6 +48,7 @@ public class Semantics {
         if (s instanceof Block)  return M((Block)s, state);
 	if (s instanceof CallStatement) return M((CallStatement)s, state);
 	if (s instanceof Return) return M((Return)s, state);
+	if (s instanceof Print) return M((Print)s, state);
         throw new IllegalArgumentException("should never reach here");
     }
   
@@ -112,6 +113,15 @@ public class Semantics {
 	// reset saw_ret to catch next function call's return
 	saw_ret = false;
 
+	return state;
+    }
+
+    State M (Print p, State state) {
+	// If you wanted to literally interpret the program
+	// this is what you'd do:
+	// System.out.println(M(p.to_print, state));
+	// However, it just gets in the way with Clite's 
+	// state display
 	return state;
     }
 
