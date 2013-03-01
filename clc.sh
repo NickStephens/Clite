@@ -1,11 +1,11 @@
 #!/bin/bash
 
 if [[ $1 == "-i" ]]
-   then java Semantics $2
+   then java -jar bin/CliteInterpreter.jar $2
 else 
 if [[ $1 == "-c" ]] 
    then
-   java CodeGen $2 > /dev/null
+   java -jar bin/CliteCompiler.jar $2 > /dev/null
 
    # Some bash string operations
    EXTEN=".cpp"
