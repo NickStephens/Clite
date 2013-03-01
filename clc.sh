@@ -3,7 +3,8 @@
 if [[ $1 == "-i" ]]
    then java -jar ~/.clite/CliteInterpreter.jar $2
 else 
-   if [[ $1 == "-c" || $1 == "-cj"]] 
+
+if [[ ($1 == "-c") || ($1 == "-cj") ]] 
 	then
 	java -jar ~/.clite/CliteCompiler.jar $2 > /dev/null
 
