@@ -302,6 +302,10 @@ class Conditional extends Statement {
 		return (thenbranch.hasReturn() || elsebranch.hasReturn());
 	}
 
+	boolean mustReturn() {
+		return (thenbranch.hasReturn() && elsebranch.hasReturn());
+	}
+
 	/*
 	public void display() {
 		System.out.println("Conditional: ");

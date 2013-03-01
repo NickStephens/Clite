@@ -218,16 +218,20 @@ public class CodeGen {
 
 	jfile.writeln("TRUE" + current_branch_cnt + ":");
 	M(c.thenbranch, symtable, jfile);	
-	jfile.writeln("goto COMPLETE" + current_branch_cnt);
-	
-	jfile.writeln();
+
+	if (! c.mustReturn()) {
+		jfile.writeln("goto COMPLETE" + current_branch_cnt);
+		
+		jfile.writeln();
+	}
 
 	jfile.writeln("FALSE" + current_branch_cnt + ":");
 	M(c.elsebranch, symtable, jfile);
 
 	jfile.writeln();
 	
-	jfile.writeln("COMPLETE" + current_branch_cnt + ":");
+	if (! c.mustReturn()) 
+		jfile.writeln("COMPLETE" + current_branch_cnt + ":");
 	
 
     }
