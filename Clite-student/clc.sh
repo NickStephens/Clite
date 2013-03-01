@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/bin/bash
 
 java CodeGen $1 > /dev/null
 
