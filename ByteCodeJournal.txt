@@ -135,6 +135,8 @@ Static methods pass parameters through local 0! there is no space reserved for t
 
 Recursive methods where return statements only exists though off my branching mechanism. Becuase Jasmin sees a COMPLETE? branch which does not return and leads into no where
 
+I will implement a test that sees if there exists a return statement on every possible execution branch of an If Node.
+
 Reflection:
 
 As with any project some poor design decisions were made, and some steps could have been taken to save time and write more elegant code.
