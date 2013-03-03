@@ -59,7 +59,6 @@ case $1 in
 		;;
 	-a | --assembly)
 		java -jar ~/.clite/CliteCompiler.jar $2 > /dev/null
-		mv $jasm.j .
 		;;
 	-*)
 		echo "unknown option: $1"
