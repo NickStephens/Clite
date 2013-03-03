@@ -685,7 +685,8 @@ class Operator {
             || val.equals(FLOAT_TIMES) || val.equals(FLOAT_DIV);
     }
     boolean NotOp ( ) { return val.equals(NOT) ; }
-    boolean NegateOp ( ) { return val.equals(NEG) ; }
+    boolean NegateOp ( ) { return (val.equals(NEG) || val.equals(INT_NEG) || 
+				   val.equals(FLOAT_NEG)); }
     boolean intOp ( ) { return val.equals(INT); }
     boolean floatOp ( ) { return val.equals(FLOAT); }
     boolean charOp ( ) { return val.equals(CHAR); }

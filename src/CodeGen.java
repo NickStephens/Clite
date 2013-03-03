@@ -297,7 +297,7 @@ public class CodeGen {
 	
     void M (Return r, SymbolTable symtable, JasminFile jfile) throws IOException {
 	M (r.result, symtable, jfile);
-	String j_type =typeOf(r.result, symtable).to_jasmin(); 
+	String j_type = typeOf(r.result, symtable).to_jasmin(); 
 	if (j_type.equals("I"))	
 		jfile.writeln("ireturn");
 	else // it's gotta be a float
@@ -324,11 +324,13 @@ public class CodeGen {
         }
         if (e instanceof Unary) {
             Unary u = (Unary)e;
+	    System.out.println("looking in Unary");
             if (u.op.NotOp( ))        return (Type.BOOL);
             else if (u.op.NegateOp( )) return typeOf(u.term,sym);
             else if (u.op.intOp( ))    return (Type.INT);
             else if (u.op.floatOp( )) return (Type.FLOAT);
             else if (u.op.charOp( ))  return (Type.CHAR);
+	    System.out.println("nothing in Unary!");
         }
 	if (e instanceof CallExpression) {
 	    CallExpression c = (CallExpression) e;

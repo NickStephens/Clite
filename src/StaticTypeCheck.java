@@ -132,7 +132,7 @@ public class StaticTypeCheck {
 			check( ! s.getClass().equals(Return.class), 
 				"return statement in void function " + f.id);
 		}
-	} else {
+	} else { // The function being checked in main
 		for (Statement s : f.body.members) {
 			check (! s.getClass().equals(Return.class),
 				"return statement in main");
@@ -244,7 +244,7 @@ public class StaticTypeCheck {
 
 		FunctionMap fm = (FunctionMap) o; 
 		check( ! fm.getType().equals(Type.VOID), "call expression " + c + " to void function");
-		TypeMap called_params = (TypeMap) fm.getParams();	
+		TypeMap called_params = (TypeMap) fm.getParams();
 
 		Iterator it = called_params.entrySet().iterator();
 		for (int i=0; i<c.args.size(); i++) {
