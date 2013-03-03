@@ -1,7 +1,7 @@
 import java.util.*;
 
 // public class TypeMap extends HashMap<VariableRef, Type> {
-public class TypeMap extends HashMap<VariableRef, Object> { 
+public class TypeMap extends TreeMap<VariableRef, Object> { 
 
 // TypeMap is implemented as a Java HashMap.  
 // Plus a 'display' method to facilitate experimentation.

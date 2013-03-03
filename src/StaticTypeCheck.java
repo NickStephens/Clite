@@ -249,6 +249,7 @@ public class StaticTypeCheck {
 		Iterator it = called_params.entrySet().iterator();
 		for (int i=0; i<c.args.size(); i++) {
 			check (it.hasNext(), "too many arguments provided to function " + c.name);
+			// this is a key-value pair from the called params
 			Map.Entry<VariableRef, Object> current_param= (Map.Entry<VariableRef, Object>) it.next();
 			Type param_type = (Type) current_param.getValue();
 			Expression current_arg = c.args.get(i);
