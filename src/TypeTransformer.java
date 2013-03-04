@@ -66,22 +66,24 @@ public class TypeTransformer {
 		//Looking for typemap associated with call's name
 		Object o = tm.get(new Variable(c.name));
 		FunctionMap fm = (FunctionMap) o; 
-		TypeMap called_params = (TypeMap) fm.getParams();	
+		FunctionTypeMap called_params = (FunctionTypeMap) fm.getParams();	
 
-		Iterator it = called_params.entrySet().iterator();
+		ArrayList<Type> param_types = called_params.typeArray(); 
 
-		Expressions t_args = new Expressions();
 		for (int i=0; i<c.args.size(); i++) {
-			Map.Entry<VariableRef, Object> current_param= (Map.Entry<VariableRef, Object>) it.next();
-			Type param_type = (Type) current_param.getValue();
-			Expression current_arg = c.args.get(i);
-			if (param_type == Type.FLOAT && StaticTypeCheck.typeOf(current_arg, tm) == Type.INT) {
-				t_args.add(new Unary(new Operator(Operator.I2F), T(current_arg, tm)));	
-			} else {
-				t_args.add(T(current_arg, tm));
+			Type current_arg_type = StaticTypeCheck.typeOf(c.args.get(i), tm);
+			if (param_types.get(i).equals(Type.FLOAT)) {
+				if (current_arg_type.equals(Type.INT))
+					c.args.set(i, new Unary(new Operator(Operator.I2F), T(c.args.get(i), tm)));	
+				else
+					c.args.set(i, T(c.args.get(i), tm));
 			}
-		}
-		return new CallExpression(c.name, t_args);
+			else {
+				c.args.set(i, T(c.args.get(i), tm));
+			}
+		} 
+		return new CallExpression(c.name, c.args);
+
 	}
 	throw new IllegalArgumentException("should never reach here");
     }
@@ -145,22 +147,22 @@ public class TypeTransformer {
 		//Looking for typemap associated with call's name
 		Object o = tm.get(new Variable(c.name));
 		FunctionMap fm = (FunctionMap) o; 
-		TypeMap called_params = (TypeMap) fm.getParams();	
+		FunctionTypeMap called_params = (FunctionTypeMap) fm.getParams();	
+		ArrayList<Type> param_types = called_params.typeArray(); 
 
-		Iterator it = called_params.entrySet().iterator();
-
-		Expressions t_args = new Expressions();
 		for (int i=0; i<c.args.size(); i++) {
-			Map.Entry<VariableRef, Object> current_param= (Map.Entry<VariableRef, Object>) it.next();
-			Type param_type = (Type) current_param.getValue();
-			Expression current_arg = c.args.get(i);
-			if (param_type == Type.FLOAT && StaticTypeCheck.typeOf(current_arg, tm) == Type.INT) {
-				t_args.add(new Unary(new Operator(Operator.I2F), T(current_arg, tm)));	
-			} else {
-				t_args.add(T(current_arg, tm));
+			Type current_arg_type = StaticTypeCheck.typeOf(c.args.get(i), tm);
+			if (param_types.get(i).equals(Type.FLOAT)) {
+				if (current_arg_type.equals(Type.INT))
+					c.args.set(i, new Unary(new Operator(Operator.I2F), T(c.args.get(i), tm)));	
+				else
+					c.args.set(i, T(c.args.get(i), tm));
 			}
-		}
-		return new CallStatement(c.name, t_args);
+			else {
+				c.args.set(i, T(c.args.get(i), tm));
+			}
+		} 
+		return new CallStatement(c.name, c.args);
 	}
 	if (s instanceof Print) {
 	    Print p = (Print) s;
