@@ -10,14 +10,18 @@ public class FunctionTypeMap {
 	
 	private class Pair {
 		VariableRef key;
-		Object value;
+		Type value;
 		
-		public Pair(VariableRef k, Object v) {
+		public Pair(VariableRef k, Type v) {
 			key = k; value = v;
 		}
 		
-		public void update(Object v) {
+		public void update(Type v) {
 			value = v;
+		}
+
+		public String toString() {
+			return "<" + key + ", " + value + ">";
 		}
 	}
 
@@ -27,13 +31,13 @@ public class FunctionTypeMap {
 		members = new ArrayList<Pair>();
 	}
 
-	public FunctionTypeMap(VariableRef k, Object v) {
+	public FunctionTypeMap(VariableRef k, Type v) {
 		members = new ArrayList<Pair>();
 
 		members.add(new Pair(k, v));
 	}
 
-	public void put(VariableRef k, Object v) {
+	public void put(VariableRef k, Type v) {
 		int index = -1;	
 		for (int i=0; i < members.size(); i++) {
 			if (members.get(i).key.equals(k))
@@ -45,12 +49,29 @@ public class FunctionTypeMap {
 			members.set(index, new Pair(k,v));
 	}
 
-	public Object get(VariableRef k) {
+	public Type get(VariableRef k) {
 		for (int i=0; i < members.size(); i++) {
 			if (members.get(i).equals(k))
 				return members.get(i).value; 
 		}
 		throw new IllegalArgumentException("none existent key");
+	}
+
+	public ArrayList<Type> typeArray() {
+		ArrayList<Type> ret = new ArrayList<Type>();
+		for (Pair pi : members) {
+			ret.add(pi.value);
+		}
+		return ret;
+	}
+
+	public String toString() {
+		String ret = "[";
+		for (Pair pi : members) 
+			ret += pi.toString() + ", ";
+		if (ret.length() > 2) 
+			return ret.substring(0, ret.length()-2) + "]";
+		return ret + "]";
 	}
 }
 		

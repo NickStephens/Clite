@@ -1,8 +1,8 @@
 public class FunctionMap {
 	private Type t;
-	private TypeMap params;
+	private FunctionTypeMap params;
 
-	public FunctionMap(Type t, TypeMap params) {
+	public FunctionMap(Type t, FunctionTypeMap params) {
 		this.t = t; this.params = params;
 	}
 
@@ -10,7 +10,7 @@ public class FunctionMap {
 		return t;
 	}
 
-	public TypeMap getParams() {
+	public FunctionTypeMap getParams() {
 		return params;
 	}
 

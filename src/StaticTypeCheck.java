@@ -21,7 +21,7 @@ public class StaticTypeCheck {
 		map.put (di.v, di.t);
 	}
 	for (Function fi : F) {
-		map.put (new Variable(fi.id), new FunctionMap (fi.t, typing(fi.params)));
+		map.put (new Variable(fi.id), new FunctionMap (fi.t, param_typing(fi.params)));
 	}
 	for (Declaration pi : f.params) {
 		map.put (pi.v, pi.t);
@@ -39,7 +39,15 @@ public class StaticTypeCheck {
 		map.put (di.v, di.t);
 	}
 	for (Function fi : F) {
-		map.put (new Variable(fi.id), new FunctionMap (fi.t, typing(fi.params)));
+		map.put (new Variable(fi.id), new FunctionMap (fi.t, param_typing(fi.params)));
+	}
+	return map;
+    }
+
+    public static FunctionTypeMap param_typing (Declarations d) {
+	FunctionTypeMap map = new FunctionTypeMap();
+	for (Declaration di : d) {
+	    map.put (di. v, di.t);
 	}
 	return map;
     }
@@ -244,24 +252,28 @@ public class StaticTypeCheck {
 
 		FunctionMap fm = (FunctionMap) o; 
 		check( ! fm.getType().equals(Type.VOID), "call expression " + c + " to void function");
-		TypeMap called_params = (TypeMap) fm.getParams();
+		FunctionTypeMap called_params = (FunctionTypeMap) fm.getParams();
 
-		Iterator it = called_params.entrySet().iterator();
+		ArrayList<Type> param_types = called_params.typeArray(); 
+
+		if (param_types.size() < c.args.size())
+			check(param_types.size() == c.args.size(), "too many arguments supplied to function " + c.name);
+		else if (param_types.size() > c.args.size())
+			check(param_types.size() == c.args.size(), "too little arguments supplied to function " + c.name);
+		
+		// at this point it is guaranteed that the correct number of arguments have been supplied
 		for (int i=0; i<c.args.size(); i++) {
-			check (it.hasNext(), "too many arguments provided to function " + c.name);
-			// this is a key-value pair from the called params
-			Map.Entry<VariableRef, Object> current_param= (Map.Entry<VariableRef, Object>) it.next();
-			Type param_type = (Type) current_param.getValue();
-			Expression current_arg = c.args.get(i);
-			if (param_type == Type.FLOAT) {
-				check( typeOf(current_arg, tm) == Type.FLOAT || typeOf(current_arg, tm) == Type.INT,
-					current_arg + " is not coercible to Float");
-			} else {
-				check( typeOf(current_arg, tm).equals(param_type),
-					"Argument given to function " + c.name + " is not coercible to " + param_type);
+			Type current_arg_type = typeOf(c.args.get(i), tm);
+			if (param_types.get(i).equals(Type.FLOAT)) {
+				check((current_arg_type == Type.FLOAT) ||
+					(current_arg_type  == Type.INT), 
+				"argument passed to function " + c.name + "not coercible to type float");	
 			}
-		}
-		check( ! it.hasNext(), "not enough arguments provided to function " + c.name);
+			else {
+				check(current_arg_type.equals(param_types.get(i)), 
+				"argument passed to function " + c.name + "not coercible to type " + param_types.get(i));
+			}
+		} 
 		return;
 	}
         throw new IllegalArgumentException("should never reach here");
@@ -330,25 +342,31 @@ public class StaticTypeCheck {
 		
 		FunctionMap fm = (FunctionMap) o; 
 		check( fm.getType().equals(Type.VOID), "call statement " + c + "to non-void function");
-		TypeMap called_params = (TypeMap) fm.getParams();	
 
-		Iterator it = called_params.entrySet().iterator();
+		FunctionTypeMap called_params = (FunctionTypeMap) fm.getParams();
+
+		ArrayList<Type> param_types = called_params.typeArray(); 
+
+		if (param_types.size() < c.args.size())
+			check(param_types.size() == c.args.size(), "too many arguments supplied to function " + c.name);
+		else if (param_types.size() > c.args.size())
+			check(param_types.size() == c.args.size(), "too little arguments supplied to function " + c.name);
+		
+		// at this point it is guaranteed that the correct number of arguments have been supplied
 		for (int i=0; i<c.args.size(); i++) {
-			check (it.hasNext(), "too many arguments provided to function " + c.name);
-			Map.Entry<VariableRef, Object> current_param= (Map.Entry<VariableRef, Object>) it.next();
-			Type param_type = (Type) current_param.getValue();
-			Expression current_arg = c.args.get(i);
-			if (param_type == Type.FLOAT) {
-				check( typeOf(current_arg, tm) == Type.FLOAT || typeOf(current_arg, tm) == Type.INT,
-					current_arg + " is not coercible to Float");
-			} else {
-				check( typeOf(current_arg, tm).equals(param_type),
-					"Argument given to function " + c.name + " is not coercible to " + param_type);
+			Type current_arg_type = typeOf(c.args.get(i), tm);
+			if (param_types.get(i).equals(Type.FLOAT)) {
+				check((current_arg_type == Type.FLOAT) ||
+					(current_arg_type  == Type.INT), 
+				"argument passed to function " + c.name + "not coercible to type float");	
 			}
-		}
-		check( ! it.hasNext(), "not enough arguments provided to function " + c.name);
+			else {
+				check(current_arg_type.equals(param_types.get(i)), 
+				"argument passed to function " + c.name + "not coercible to type " + param_types.get(i));
+			}
+		} 
 		return;
-	}
+	} 
 	if (s instanceof Return) 
 		return;
 	if (s instanceof Print) {
