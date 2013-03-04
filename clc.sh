@@ -4,7 +4,7 @@
 
 usage() {
 	echo """
-usage: clc [-i|-c[j]|-a] clitefile
+usage: clc [-h|-i|-c|-k|-a] clitefile
 example: clc -k recFib.cpp
 
 OPTIONS:
