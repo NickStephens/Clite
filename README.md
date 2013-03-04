@@ -36,6 +36,7 @@ OPTIONS:
 > <a href="http://highered.mcgraw-hill.com/sites/0072866098/student_view0/clite_interpreter_.html">here</a>, it goes hand-in-hand with the book 
 > <u>Programming Languages: Priniciples and Paradigms</u> by Allen B. Tucker and 
 > Robert E. Noonan. However, the JVM ByteCode compilation extension and _CliteF_ 
-> interpretation is largely of my own design.
+> interpretation is largely of my own design. I am not responsible for the language'
+> s specification
 
 __Dependencies:__ <a href="http://jasmin.sourceforge.net/">Jasmin</a>
