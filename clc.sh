@@ -18,7 +18,7 @@ OPTIONS:
 }
 
 compile() {
-	java -jar ~/.clite/CliteCompiler.jar $file > /dev/null
+	java -jar ~/.clite/CliteCodeGen.jar $file > /dev/null
 	
 	EXTEN=".cpp"
 	EXTEN_LEN=${#EXTEN}
@@ -58,7 +58,7 @@ case $1 in
 		compile
 		;;
 	-a | --assembly)
-		java -jar ~/.clite/CliteCompiler.jar $2 > /dev/null
+		java -jar ~/.clite/CliteCodeGen.jar $2 > /dev/null
 		;;
 	-*)
 		echo "unknown option: $1"
