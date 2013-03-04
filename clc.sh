@@ -11,7 +11,7 @@ OPTIONS:
 	-h, --help		 output this help file
 	-i, --interpret		 interpret the clite input file
 	-c, --compile		 compile the clite input to Java Bytecode
-	-k, --compile-and-keep  compile the clite input to Java Bytecode and keep the the produced jasmin assembly
+	-k, --compile-and-keep   compile the clite input to Java Bytecode and keep the the produced jasmin assembly
 	-a, --assembly		 produce the jasmin assembly of the clite input file
 	"""
 	exit 1
