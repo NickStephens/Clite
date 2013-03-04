@@ -4,8 +4,8 @@
 
 usage() {
 	echo """
-usage: clc [-h|-i|-c|-k|-a] clitefile
-example: clc -k recFib.cpp
+usage: $0 [-h|-i|-c|-k|-a] clitefile
+example: $0 -k recFib.cpp
 
 OPTIONS:
 	-h, --help		 output this help file
@@ -18,18 +18,18 @@ OPTIONS:
 }
 
 compile() {
-	java -jar ~/.clite/CliteCodeGen.jar $file > /dev/null
+	java -jar ./bin/CliteCodeGen.jar $file > /dev/null
 	
 	EXTEN=".cpp"
 	EXTEN_LEN=${#EXTEN}
 
 	jasm=${file:0:$(expr ${#file} - $EXTEN_LEN)}
 	
-	java -jar ~/.clite/jasmin.jar $jasm.j > /dev/null
+	java -jar ./bin/jasmin.jar $jasm.j > /dev/null
 }
 
 interpret() {
-	java -jar ~/.clite/CliteInterpreter.jar $file 	
+	java -jar ./bin/CliteInterpreter.jar $file 	
 }
 
 cleanup() {
@@ -58,7 +58,7 @@ case $1 in
 		compile
 		;;
 	-a | --assembly)
-		java -jar ~/.clite/CliteCodeGen.jar $2 > /dev/null
+		java -jar ./bin/CliteCodeGen.jar $2 > /dev/null
 		;;
 	-*)
 		echo "unknown option: $1"
