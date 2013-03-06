@@ -8,7 +8,7 @@ that Clite is not a subset of C).
 My implementation of the Clite language compiles to Java Bytecode. Included with the homemade bytecode compilation extension is a bash schellscript, 
 clc.sh. This script has a number of options:
 <pre> 
-Nick@celeb-mansion:clite $ ./clc.sh --help
+$ ./clc.sh --help
 
 usage: ./clc.sh [-h|-i|-c|-k|-a] clitefile
 example: ./clc.sh -k recFib.cpp
